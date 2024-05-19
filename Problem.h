@@ -13,16 +13,21 @@
 /**
  * Assume the problem is in the form of
  * min c^T x
- * s.t. Ax >= b
+ * s.t. A_eq x == b_eq
+ *     A_ineq x >= b_ineq
  *     x \in {0, 1}^n
  */
 class Problem {
  private:
-    IntMatrix A;
-    IntVector b;
-    IntVector c;
-    long nVar;
-    long nRow;
+  IntSpMat A_eq;
+  IntSpMat A_ineq;
+  IntSpVec b_eq;
+  IntSpVec b_ineq;
+  IntSpVec c;
+  long nVar;
+  long nCons;
+  long nConsEq;
+  long nConsIneq;
 
 };
 

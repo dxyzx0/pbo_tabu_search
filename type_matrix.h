@@ -2,16 +2,16 @@
 // Created by psw on 5/19/24.
 //
 
-#ifndef PBO_HEURISTICS__TYPE_H_
-#define PBO_HEURISTICS__TYPE_H_
+#ifndef PBO_HEURISTICS__TYPE_MATRIX_H_
+#define PBO_HEURISTICS__TYPE_MATRIX_H_
 
 // define Matrix and Vector Type
 #ifdef useEigen
 #include <Eigen/SparseCore>
-//typedef Eigen::SparseMatrix< IntegerType, RowMajor > IntMatrix;
-typedef Eigen::SparseMatrix< IntegerType > IntMatrix;
-typedef Eigen::SparseVector< IntegerType > IntVector;
-typedef Eigen::SparseVector< bool > BinVector;
+typedef Eigen::SparseMatrix< IntegerType, Eigen::RowMajor > IntSpMat;
+//typedef Eigen::SparseMatrix< IntegerType > IntSpMat;
+typedef Eigen::SparseVector< IntegerType > IntSpVec;
+typedef Eigen::SparseVector< bool > BinSpVec;
 #else
 #warning this MatrixType and VectorType may not be suitable for some input file. Consider using Eigen
 #error "MatrixType and VectorType must be defined"

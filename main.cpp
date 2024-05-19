@@ -8,9 +8,9 @@
 int main() {
   long nVar = 10;
   long nRow = 5;
-  IntMatrix A( nRow, nVar );
-  IntVector b( nRow );
-  IntVector x( nVar );
+  IntSpMat A( nRow, nVar );
+  IntSpVec b( nRow );
+  IntSpVec  x( nVar );
 
   A.insert( 0, 0 ) = 1;
   A.insert( 1, 1 ) = 1;

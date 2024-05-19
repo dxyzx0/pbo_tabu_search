@@ -33,6 +33,7 @@
 #include <cassert>
 #include "SimpleParser.h"
 #include "DefaultCallback.h"
+#include "AbcCallback.h"
 using namespace std;
 
 /**
@@ -589,7 +590,7 @@ int main( int argc, char* argv[] ) {
     if ( argc != 2 )
       cout << "usage: SimpleParser <filename>" << endl;
     else {
-      SimpleParser< DefaultCallback > parser( argv[1] );
+      SimpleParser< AbcCallback > parser( argv[1] );
 
       parser.setAutoLinearize( true );
       parser.parse();
