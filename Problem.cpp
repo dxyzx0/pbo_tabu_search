@@ -27,7 +27,7 @@ Problem::Problem(AbcCallback& abcCallback)
 	c = make_shared< IntSpVec >(nVar);
 
 	// update b_eq, b_ineq
-	std::map<long, string> relOp_map;
+	std::map< long, string > relOp_map;
 	for (auto i = 0; i < abcCallback.getB().size(); i++)
 	{
 		auto [iConsRelOp, relop] = abcCallback.getRelOp()[i];
@@ -82,7 +82,47 @@ Problem::Problem(AbcCallback& abcCallback)
 		c->insert(idVar) = coeff;
 	}
 
-	assert( nConsEq + nConsIneq == nCons);
-	assert( nnz_A_eq + nnz_A_ineq == nnz);
+	assert(nConsEq + nConsIneq == nCons);
+	assert(nnz_A_eq + nnz_A_ineq == nnz);
 
+}
+
+Problem::Problem(const Problem& prob)
+{
+	nVar = prob.nVar;
+	nCons = prob.nCons;
+	nConsEq = prob.nConsEq;
+	nConsIneq = prob.nConsIneq;
+	nnz = prob.nnz;
+	nnz_A_eq = prob.nnz_A_eq;
+	nnz_A_ineq = prob.nnz_A_ineq;
+
+	A_eq = make_shared< IntSpMat >(*prob.A_eq);
+	A_ineq = make_shared< IntSpMat >(*prob.A_ineq);
+	b_eq = make_shared< IntSpVec >(*prob.b_eq);
+	b_ineq = make_shared< IntSpVec >(*prob.b_ineq);
+	c = make_shared< IntSpVec >(*prob.c);
+}
+
+Problem& Problem::operator=(const Problem& prob)
+{
+	if (this == &prob)
+	{
+		return *this;
+	}
+	nVar = prob.nVar;
+	nCons = prob.nCons;
+	nConsEq = prob.nConsEq;
+	nConsIneq = prob.nConsIneq;
+	nnz = prob.nnz;
+	nnz_A_eq = prob.nnz_A_eq;
+	nnz_A_ineq = prob.nnz_A_ineq;
+
+	A_eq = make_shared< IntSpMat >(*prob.A_eq);
+	A_ineq = make_shared< IntSpMat >(*prob.A_ineq);
+	b_eq = make_shared< IntSpVec >(*prob.b_eq);
+	b_ineq = make_shared< IntSpVec >(*prob.b_ineq);
+	c = make_shared< IntSpVec >(*prob.c);
+
+	return *this;
 }

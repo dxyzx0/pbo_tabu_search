@@ -75,7 +75,10 @@ class Problem
 	{
 		return nConsIneq;
 	}
-	void print();
+	// copy constructor
+	Problem(const Problem& prob);
+	// copy assignment
+	Problem& operator=(const Problem& prob);
 };
 
 #endif //PBO_HEURISTICS__PROBLEM_H_
