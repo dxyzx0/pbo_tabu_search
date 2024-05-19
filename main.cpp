@@ -3,19 +3,39 @@
 //
 
 #include <iostream>
-#include "type.h"
+#include "parser/SimpleParser.h"
+#include "parser/AbcCallback.h"
+#include "Problem.h"
 
-int main() {
-  long nVar = 10;
-  long nRow = 5;
-  IntSpMat A( nRow, nVar );
-  IntSpVec b( nRow );
-  IntSpVec  x( nVar );
+using namespace std;
 
-  A.insert( 0, 0 ) = 1;
-  A.insert( 1, 1 ) = 1;
-  x.insert( 0 ) = 1;
-  x.insert( 1 ) = 2;
-  std::cout << A * x << std::endl;
-  return 0;
+
+int main(int argc, char* argv[])
+{
+	SimpleParser< AbcCallback >* parser = nullptr;
+	try
+	{
+		if (argc != 2)
+		{
+			cout << "usage: SimpleParser <filename>" << endl;
+			return -1;
+		}
+		else
+		{
+			parser = new SimpleParser< AbcCallback >(argv[1]);
+
+			parser->setAutoLinearize(true);
+			parser->parse();
+		}
+	}
+	catch (exception& e)
+	{
+		cout.flush();
+		cerr << "ERROR: " << e.what() << endl;
+	}
+
+	assert(parser != nullptr);
+	Problem problem(parser->cb);
+
+	return 0;
 }

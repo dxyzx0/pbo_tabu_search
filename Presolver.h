@@ -5,10 +5,11 @@
 #ifndef PBO_HEURISTICS__PRESOLVER_H_
 #define PBO_HEURISTICS__PRESOLVER_H_
 
-class Presolver {
-  public:
-    virtual void presolve() = 0;
-    virtual void postsolve() = 0;
+class Presolver
+{
+ public:
+	virtual void presolve() = 0;
+	virtual void postsolve() = 0;
 };
 
 // Presolver 1: transform all the constraints to the form of Ax >= b

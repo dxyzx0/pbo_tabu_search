@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.28)
 project(PBO_Heuristics)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 23)
 
 # add -DuseGMP to compile with GMP
 # add -DuseGMPXX to compile with GMPXX
@@ -19,12 +19,17 @@ option(useEigen "Use Eigen" ON)
 if (useEigen)
     find_package(Eigen3 3.4 REQUIRED NO_MODULE)
     add_executable(pbo_heur_eigen
-            main.cpp
+            parser/SimpleParser.h
+            parser/DefaultCallback.cpp
+            parser/DefaultCallback.h
+            parser/AbcCallback.cpp
+            parser/AbcCallback.h
             Problem.cpp
             Problem.h
             type.h
             Presolver.cpp
             Presolver.h
+            main.cpp
     )
     target_link_libraries(pbo_heur_eigen gmp gmpxx Eigen3::Eigen)
     target_compile_definitions(pbo_heur_eigen PRIVATE useGMP useEigen)
