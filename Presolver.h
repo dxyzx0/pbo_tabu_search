@@ -19,7 +19,7 @@ class Presolver
 	shared_ptr< Problem > prob;
 	shared_ptr< Settings > set;
  public:
-	explicit Presolver(shared_ptr< Problem > problem, shared_ptr< Settings > settings = nullptr);
+	Presolver(shared_ptr< Problem > problem, shared_ptr< Settings > settings);
 	virtual PresResult presolve() = 0;
 	virtual void postsolve() = 0;
 };

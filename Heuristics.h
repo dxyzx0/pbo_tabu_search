@@ -16,7 +16,7 @@ class Heuristics
 	shared_ptr< Problem > prob;
 	shared_ptr< Settings > set;
  public:
-	explicit Heuristics(shared_ptr< Problem > prob, shared_ptr< Settings > settings = nullptr);
+	Heuristics(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	virtual HeurResult heuristic() = 0;
 
 };

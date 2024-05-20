@@ -91,6 +91,9 @@ class Problem
 	{
 		this->nConsIneq = nConsIneq;
 	}
+	bool isFeasible(const IntSpVec& x);
+//	bool isFeasible(const IntSpMat& X);
+	IntegerType getObj(const IntSpVec& x);
 	// copy constructor
 	Problem(const Problem& prob);
 	// copy assignment

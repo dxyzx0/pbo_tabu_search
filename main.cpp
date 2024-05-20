@@ -36,10 +36,11 @@ int main(int argc, char* argv[])
 	}
 
 	assert(parser != nullptr);
-	Problem problem(parser->cb);
 
-	Solver solver(make_shared< Problem >(problem));
-	solver.solve();
+	Solver solver(make_shared< Problem >(parser->cb), make_shared< Settings >());
+	SolveResult result = solver.solve();
+
+	cout << "Result: " << result << endl;
 
 	return 0;
 }

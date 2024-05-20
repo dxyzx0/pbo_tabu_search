@@ -13,8 +13,8 @@ using namespace std;
 PresolverNaive::PresolverNaive(shared_ptr< Problem > prob, shared_ptr< Settings > settings) : Presolver(std::move(prob),
 	std::move(settings))
 {
-
 }
+
 PresolverNaive::~PresolverNaive()
 {
 
@@ -29,6 +29,7 @@ PresResult PresolverNaive::presolve()
 	inf_cons_eq.reserve(prob->getNConsEq());
 
 	// enumerate all constraints in the problem to check if they are redundant
+	// TODO: change to A_ineq->row(i).cwiseMin(0).sum() >= b_i, same for equality constraints
 	auto A_ineq = prob->getA_ineq();
 	for (long i = 0; i < A_ineq->outerSize(); ++i)
 	{

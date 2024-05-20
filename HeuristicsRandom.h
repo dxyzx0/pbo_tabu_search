@@ -7,11 +7,14 @@
 
 #include "Heuristics.h"
 
-class HeuristicsRandom: public Heuristics
+class HeuristicsRandom : public Heuristics
 {
+ private:
+	long nTryPerRound = 10000;
  public:
-	explicit HeuristicsRandom( shared_ptr< Problem > prob, shared_ptr< Settings > settings = nullptr );
+	HeuristicsRandom(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	HeurResult heuristic() override;
+	static shared_ptr< IntSpVec > gen_rnd_spvec(long nVar, long nNonZero);
 
 };
 

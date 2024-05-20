@@ -20,7 +20,7 @@ Problem::Problem(AbcCallback& abcCallback)
 
 	assert (nCons == abcCallback.getRelOp().size() && nCons == abcCallback.getB().size());
 
-	for (const auto& [iConsRelOp, relop]: abcCallback.getRelOp())
+	for (const auto& [iConsRelOp, relop] : abcCallback.getRelOp())
 	{
 		if (relop == "=")
 		{
@@ -137,6 +137,12 @@ Problem::Problem(AbcCallback& abcCallback)
 	assert(nConsEq + nConsIneq == nCons);
 	assert(nnz_A_eq + nnz_A_ineq == nnz);
 
+	A_ineq->finalize();
+	A_eq->finalize();
+	b_eq->finalize();
+	b_ineq->finalize();
+	c->finalize();
+
 }
 
 Problem::Problem(const Problem& prob)
@@ -177,4 +183,68 @@ Problem& Problem::operator=(const Problem& prob)
 	c = make_shared< IntSpVec >(*prob.c);
 
 	return *this;
+}
+
+bool Problem::isFeasible(const IntSpVec& x)
+{
+	// check if x is feasible
+	// check if A_eq * x = b_eq
+//	cout << "x = " << x << endl;
+//	for (auto i = 0; i < x.size(); i++)
+//	{
+//		cout << "x(" << i << ") = " << x.coeff(i) << endl;
+//	}
+//	cout << "A_eq = " << *A_eq << endl;
+//	for (auto i = 0; i < A_eq->outerSize(); i++)
+//	{
+//		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
+//		{
+//			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//		}
+//	}
+//	cout << "b_eq = " << *b_eq << endl;
+//	for (auto i = 0; i < b_eq->size(); i++)
+//	{
+//		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
+//	}
+//	cout << "A_ineq = " << *A_ineq << endl;
+//	for (auto i = 0; i < A_ineq->outerSize(); i++)
+//	{
+//		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
+//		{
+//			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//		}
+//	}
+//	cout << "b_ineq = " << *b_ineq << endl;
+//	for (auto i = 0; i < b_ineq->size(); i++)
+//	{
+//		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
+//	}
+
+	auto lhs_eq = (*A_eq) * x;
+	auto lhs_ineq = (*A_ineq) * x;
+//	cout << "lhs_eq = " << lhs_eq << endl;
+//	cout << "lhs_ineq = " << lhs_ineq << endl;
+
+	auto res_eq = lhs_eq.cwiseEqual((*b_eq)).cast< long >();
+	auto res_ineq = lhs_ineq.cwiseMax((*b_ineq)).cwiseEqual(lhs_ineq).cast< long >();
+//	cout << "res_eq = " << res_eq << endl;
+//	cout << "res_ineq = " << res_ineq << endl;
+//	cout << "res_eq.sum() = " << res_eq.sum() << endl;
+//	cout << "nConsEq = " << nConsEq << endl;
+//	cout << "res_ineq.sum() = " << res_ineq.sum() << endl;
+//	cout << "nConsIneq = " << nConsIneq << endl;
+
+	if (res_eq.sum() == nConsEq && res_ineq.sum() == nConsIneq)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+IntegerType Problem::getObj(const IntSpVec& x)
+{
+	return c->dot(x);
 }

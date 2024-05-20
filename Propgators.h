@@ -16,7 +16,7 @@ class Propgators
 	shared_ptr< Problem > prob;
 	shared_ptr< Settings > set;
  public:
-	explicit Propgators( shared_ptr< Problem > prob, shared_ptr< Settings > settings = nullptr );
+	Propgators(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	virtual PropResult propagate() = 0;
 
 };

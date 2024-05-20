@@ -12,7 +12,7 @@
 #include "Propgators.h"
 #include "Heuristics.h"
 #include "Settings.h"
-#include "type_result.h"
+#include "type.h"
 
 using namespace std;
 
@@ -26,9 +26,11 @@ class Solver
 	vector< shared_ptr< Heuristics > > heuristics;
 	shared_ptr< Settings > set;
  public:
-	explicit Solver(shared_ptr< Problem > prob, shared_ptr< Settings > settings = nullptr);
+	Solver(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	void addDefaultPlugins();
 	SolveResult solve();
+	void initSolver();
+	PresResult presolve(SolveResult&);
 };
 
 #endif //PBO_HEURISTICS__SOLVER_H_

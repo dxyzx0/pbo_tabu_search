@@ -27,19 +27,18 @@ if (useEigen)
             type.h
             Problem.cpp
             Problem.h
-            Presolver.cpp
-            Presolver.h
-            Solver.cpp
-            Solver.h
-            Propgators.cpp
-            Propgators.h
             Settings.cpp
             Settings.h
-            PresolverNaive.cpp
-            PresolverNaive.h
-            type_result.h
+            Solver.cpp
+            Solver.h
+            Presolver.cpp
+            Presolver.h
+            Propgators.cpp
+            Propgators.h
             Heuristics.cpp
             Heuristics.h
+            PresolverNaive.cpp
+            PresolverNaive.h
             HeuristicsRandom.cpp
             HeuristicsRandom.h
     )

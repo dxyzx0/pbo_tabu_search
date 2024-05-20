@@ -13,7 +13,7 @@ class PresolverNaive: public Presolver
 	vector< IntSpVec > A_eq_red;
 	vector< IntSpVec > A_ineq_red;
 public:
-	explicit PresolverNaive( shared_ptr< Problem > prob, shared_ptr< Settings > settings = nullptr );
+	PresolverNaive( shared_ptr< Problem > prob, shared_ptr< Settings > settings );
 	~PresolverNaive();
 	PresResult presolve() override;
 	void postsolve() override;
