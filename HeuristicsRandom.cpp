@@ -4,7 +4,7 @@
 
 #include <random>
 #include "HeuristicsRandom.h"
-
+#include <iostream>
 /***********************************************************************************************************************
  * HeuristicsRandom
  **********************************************************************************************************************/
@@ -35,11 +35,13 @@ HeurResult HeuristicsRandom::heuristic()
 				bestObj = crntObj;
 				bestSol = x;
 				result = HeurResult::HEUR_FINDBESTSOL;
+				cout << "Found a better solution with obj = " << bestObj << endl;
 				break;
 			}
 			else
 			{
 				result = result == HeurResult::HEUR_FINDBESTSOL ? result : HeurResult::HEUR_FINDBADSOL;
+//				cout << "Found a feasible solution with obj = " << crntObj << endl;
 			}
 
 		}
