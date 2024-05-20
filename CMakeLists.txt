@@ -38,6 +38,10 @@ if (useEigen)
             PresolverNaive.cpp
             PresolverNaive.h
             type_result.h
+            Heuristics.cpp
+            Heuristics.h
+            HeuristicsRandom.cpp
+            HeuristicsRandom.h
     )
     target_link_libraries(pbo_heur_eigen gmp gmpxx)
     target_compile_definitions(pbo_heur_eigen PRIVATE useGMP useEigen)

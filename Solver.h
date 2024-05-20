@@ -10,6 +10,7 @@
 #include "Problem.h"
 #include "Presolver.h"
 #include "Propgators.h"
+#include "Heuristics.h"
 #include "Settings.h"
 #include "type_result.h"
 
@@ -22,9 +23,11 @@ class Solver
 	shared_ptr< Problem > tran_prob;
 	vector< shared_ptr< Presolver > > presolvers;
 	vector< shared_ptr< Propgators > > propgators;
+	vector< shared_ptr< Heuristics > > heuristics;
 	shared_ptr< Settings > set;
  public:
 	explicit Solver(shared_ptr< Problem > prob, shared_ptr< Settings > settings = nullptr);
+	void addDefaultPlugins();
 	SolveResult solve();
 };
 

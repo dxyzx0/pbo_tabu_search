@@ -26,4 +26,11 @@ enum PropResult
 	PROP_UNCHANGED = 1
 };
 
+enum HeurResult
+{
+	HEUR_FINDBADSOL = 0,
+	HEUR_FINDBESTSOL = 1,
+	HEUR_NOTFIND = 2
+};
+
 #endif //PBO_HEURISTICS__TYPE_RESULT_H_

@@ -5,11 +5,18 @@
 #ifndef PBO_HEURISTICS__PROPGATORS_H_
 #define PBO_HEURISTICS__PROPGATORS_H_
 
+#include <memory>
+#include "Problem.h"
+#include "Settings.h"
 #include "type_result.h"
 
 class Propgators
 {
+ protected:
+	shared_ptr< Problem > prob;
+	shared_ptr< Settings > set;
  public:
+	explicit Propgators( shared_ptr< Problem > prob, shared_ptr< Settings > settings = nullptr );
 	virtual PropResult propagate() = 0;
 
 };
