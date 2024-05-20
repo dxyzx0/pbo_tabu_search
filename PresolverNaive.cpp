@@ -3,7 +3,7 @@
 //
 
 #include <iostream>
-#include <utility>
+#include <cassert>
 #include <algorithm>
 #include "PresolverNaive.h"
 #include "type_result.h"

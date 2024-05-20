@@ -5,33 +5,24 @@
 #include "Problem.h"
 #include <cassert>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 using namespace std;
 
 Problem::Problem(AbcCallback& abcCallback)
 {
+	cout << "Start to initialize Problem" << endl;
 	nVar = abcCallback.getNVar();
 	nCons = abcCallback.getNCons();
-	nConsEq = 0;
-	nConsIneq = 0;
-	nnz = 0;
-	nnz_A_eq = 0;
-	nnz_A_ineq = 0;
+	nConsEq = abcCallback.getNConsEq();
+	nConsIneq = abcCallback.getNConsIneq();
+	nnz = abcCallback.getA().size();
+	nnz_A_eq = abcCallback.getA_eq().size();
+	nnz_A_ineq = abcCallback.getA_ineq().size();
 
 	assert (nCons == abcCallback.getRelOp().size() && nCons == abcCallback.getB().size());
 
-	for (const auto& [iConsRelOp, relop] : abcCallback.getRelOp())
-	{
-		if (relop == "=")
-		{
-			nConsEq += 1;
-		}
-		else
-		{
-			assert(relop == ">=");
-			nConsIneq += 1;
-		}
-	}
+	spdlog::info("nConsEq = {}. nConsIneq = {}", nConsEq, nConsIneq);
 
 	// initialize A_eq, A_ineq, b_eq, b_ineq, c
 	A_eq = make_shared< IntSpMat >(nConsEq, nVar);
@@ -40,99 +31,126 @@ Problem::Problem(AbcCallback& abcCallback)
 	b_ineq = make_shared< IntSpVec >(nConsIneq);
 	c = make_shared< IntSpVec >(nVar);
 
+	A_eq->setFromTriplets(abcCallback.getA_eq().begin(), abcCallback.getA_eq().end());
+	A_ineq->setFromTriplets(abcCallback.getA_ineq().begin(), abcCallback.getA_ineq().end());
+
+	for (const auto& [iCons, b] : abcCallback.getB_eq())
+	{
+		b_eq->insert(iCons) = b;
+	}
+	for (const auto& [iCons, b] : abcCallback.getB_ineq())
+	{
+		b_ineq->insert(iCons) = b;
+	}
+
+	spdlog::info("Initialized A_eq, A_ineq, b_eq, b_ineq");
+
 	// update b_eq, b_ineq
-	long iCons_eq = 0;
-	long iCons_ineq = 0;
-	map< long, long > eq_cons_map, ineq_cons_map;
-	std::map< long, string > relOp_map;
-	for (auto i = 0; i < abcCallback.getB().size(); i++)
-	{
-		const auto [iConsRelOp, relop] = abcCallback.getRelOp()[i];
-		const auto [iConsB, b] = abcCallback.getB()[i];
+//	long iCons_eq = 0;
+//	long iCons_ineq = 0;
+//	map< long, long > eq_cons_map, ineq_cons_map;
+//	std::map< long, string > relOp_map;
+//
+//	size_t b_size = abcCallback.getB().size();
+//	for (auto i = 0; i < b_size; i++)
+//	{
+//		const auto [iConsRelOp, relop] = abcCallback.getRelOp()[i];
+//		const auto [iConsB, b] = abcCallback.getB()[i];
+//
+//		assert (iConsRelOp == iConsB);
+//
+//		auto iCons = iConsRelOp;
+//
+//		relOp_map[iCons] = relop;
+//		if (relop == "=")
+//		{
+//			b_eq->insert(iCons_eq) = b;
+//			eq_cons_map[iCons] = iCons_eq;
+//			iCons_eq++;
+//		}
+//		else
+//		{
+//			assert(relop == ">=");
+//			b_ineq->insert(iCons_ineq) = b;
+//			ineq_cons_map[iCons] = iCons_ineq;
+//			iCons_ineq++;
+//		}
+//	}
+//
+//	spdlog::info("Updated b_eq, b_ineq, create eq_cons_map, ineq_cons_map, relOp_map");
 
-		assert (iConsRelOp == iConsB);
+//	size_t A_size = abcCallback.getA().size();
+//	for (auto i = 0; i < A_size; i++)
+//	{
+//		spdlog::info("i = {}", i);
+//		// update stats
+//		auto [iCons, idVar, coeff] = abcCallback.getA()[i];
+//
+//		assert (idVar >= 0 && idVar < nVar);
+//		assert (iCons >= 0 && iCons < nCons);
+//
+//		nnz += 1;
+//
+//		auto relop = relOp_map.at(iCons);
+//
+//		spdlog::info("relop = {}", relop);
+//		if (relop == "=")
+//		{
+//			nnz_A_eq += 1;
+//			auto iCons_eq = eq_cons_map.at(iCons);
+//			A_eq->insert(iCons_eq, idVar) = coeff;
+//		}
+//		else
+//		{
+//			assert(relop == ">=");
+//			nnz_A_ineq += 1;
+//			auto iCons_ineq = ineq_cons_map.at(iCons);
+//			A_ineq->insert(iCons_ineq, idVar) = coeff;
+//		}
+//		spdlog::info("Finished updating A_eq, A_ineq");
+//	}
+//
+//	spdlog::info("Updated A_eq, A_ineq");
 
-		auto iCons = iConsRelOp;
-
-		relOp_map[iCons] = relop;
-		if (relop == "=")
-		{
-			b_eq->insert(iCons_eq) = b;
-			eq_cons_map[iCons] = iCons_eq;
-			iCons_eq++;
-		}
-		else
-		{
-			assert(relop == ">=");
-			b_ineq->insert(iCons_ineq) = b;
-			ineq_cons_map[iCons] = iCons_ineq;
-			iCons_ineq++;
-		}
-	}
-
-	for (auto i = 0; i < abcCallback.getA().size(); i++)
-	{
-		// update stats
-		auto [iCons, idVar, coeff] = abcCallback.getA()[i];
-
-		assert (idVar >= 0 && idVar < nVar);
-		assert (iCons >= 0 && iCons < nCons);
-
-		nnz += 1;
-
-		auto relop = relOp_map.at(iCons);
-
-		if (relop == "=")
-		{
-			nnz_A_eq += 1;
-			auto iCons_eq = eq_cons_map.at(iCons);
-			A_eq->insert(iCons_eq, idVar) = coeff;
-		}
-		else
-		{
-			assert(relop == ">=");
-			nnz_A_ineq += 1;
-			auto iCons_ineq = ineq_cons_map.at(iCons);
-			A_ineq->insert(iCons_ineq, idVar) = coeff;
-		}
-	}
-
-	for (auto i = 0; i < abcCallback.getC().size(); i++)
+	size_t c_size = abcCallback.getC().size();
+	for (auto i = 0; i < c_size; i++)
 	{
 		auto [idVar, coeff] = abcCallback.getC()[i];
 		c->insert(idVar) = coeff;
 	}
+
+	spdlog::info("Updated c");
 	// print out elements in A_eq
-//	for (auto i = 0; i < A_eq->outerSize(); i++)
-//	{
-//		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
-//		{
-//			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
-//		}
-//	}
-//	// print out elements in A_ineq
-//	for (auto i = 0; i < A_ineq->outerSize(); i++)
-//	{
-//		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
-//		{
-//			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
-//		}
-//	}
-//	// print out elements in b_eq
-//	for (auto i = 0; i < b_eq->size(); i++)
-//	{
-//		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
-//	}
-//	// print out elements in b_ineq
-//	for (auto i = 0; i < b_ineq->size(); i++)
-//	{
-//		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
-//	}
-//	// print out elements in c
-//	for (auto i = 0; i < c->size(); i++)
-//	{
-//		cout << "c(" << i << ") = " << c->coeff(i) << endl;
-//	}
+	for (auto i = 0; i < A_eq->outerSize(); i++)
+	{
+		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
+		{
+			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+		}
+	}
+	// print out elements in A_ineq
+	for (auto i = 0; i < A_ineq->outerSize(); i++)
+	{
+		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
+		{
+			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+		}
+	}
+	// print out elements in b_eq
+	for (auto i = 0; i < b_eq->size(); i++)
+	{
+		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
+	}
+	// print out elements in b_ineq
+	for (auto i = 0; i < b_ineq->size(); i++)
+	{
+		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
+	}
+	// print out elements in c
+	for (auto i = 0; i < c->size(); i++)
+	{
+		cout << "c(" << i << ") = " << c->coeff(i) << endl;
+	}
 
 	assert(nConsEq + nConsIneq == nCons);
 	assert(nnz_A_eq + nnz_A_ineq == nnz);

@@ -25,6 +25,10 @@ class Solver
 	vector< shared_ptr< Propgators > > propgators;
 	vector< shared_ptr< Heuristics > > heuristics;
 	shared_ptr< Settings > set;
+
+	// stats
+	long iter = 0;
+	long nBestSol = 0;
  public:
 	Solver(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	void addDefaultPlugins();

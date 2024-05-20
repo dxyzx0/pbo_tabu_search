@@ -47,13 +47,16 @@ SolveResult Solver::solve()
 
 	// main loop
 	solveStage = Stage::SOLVING;
-	long iter = 0;
-	while (iter < set->maxIter)
+	while (iter++ < set->maxIter && nBestSol < set->solLimit)
 	{
 		// heuristics
 		for (auto& heur : heuristics)
 		{
-			heur->heuristic();
+			HeurResult heurResult = heur->heuristic();
+			if (heurResult == HeurResult::HEUR_FINDBESTSOL)
+			{
+				nBestSol++;
+			}
 		}
 	}
 
@@ -64,7 +67,7 @@ SolveResult Solver::solve()
 		presolver->postsolve();
 	}
 
-	if (set->bestObj < numeric_limits< IntegerType >::max())
+	if (set->bestObj < PBOINTMAX)
 	{
 		result = SolveResult::SOLVE_FEASIBLE;
 	}

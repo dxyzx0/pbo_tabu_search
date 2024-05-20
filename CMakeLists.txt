@@ -17,6 +17,7 @@ target_compile_definitions(parser PRIVATE useGMP)
 # add Eigen as a dependency
 option(useEigen "Use Eigen" ON)
 if (useEigen)
+    find_package(spdlog CONFIG REQUIRED)
     add_executable(pbo_heur_eigen
             main.cpp
             parser/SimpleParser.h
@@ -44,6 +45,6 @@ if (useEigen)
             HeuristicsRandom.cpp
             HeuristicsRandom.h
     )
-    target_link_libraries(pbo_heur_eigen gmp gmpxx)
+    target_link_libraries(pbo_heur_eigen gmp gmpxx spdlog::spdlog)
     target_compile_definitions(pbo_heur_eigen PRIVATE useGMP useEigen)
 endif ()

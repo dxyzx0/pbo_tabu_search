@@ -18,11 +18,12 @@ class Settings
 	Settings() = default;
 
 	// solution related
-	IntegerType bestObj = 2e50;  // FIXME: numeric_limits< IntegerType >::max() has bug
+	IntegerType bestObj = PBOINTMAX;
 	shared_ptr< IntSpVec > bestSol = nullptr;
 
 	// limits related
 	long maxIter = 10;
+	long solLimit = 1;
 
 	// output related
 	shared_ptr< Messenger > msg = make_shared< Messenger >();

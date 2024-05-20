@@ -3,6 +3,7 @@
 //
 
 #include <iostream>
+#include <cassert>
 #include "parser/SimpleParser.h"
 #include "parser/AbcCallback.h"
 #include "Problem.h"
@@ -23,6 +24,10 @@ int main(int argc, char* argv[])
 		}
 		else
 		{
+			string filename = argv[1];
+			// assert filename ends with ".opb" or ".pb"
+			cout << "Parsing file: " << filename << endl;
+			assert(filename.substr(filename.find_last_of(".") + 1) == "opb" || filename.substr(filename.find_last_of(".") + 1) == "pb");
 			parser = new SimpleParser< AbcCallback >(argv[1]);
 
 			parser->setAutoLinearize(true);
