@@ -63,17 +63,33 @@ class Problem
 	{
 		return nVar;
 	}
+	void setNVar(long nVar)
+	{
+		this->nVar = nVar;
+	}
 	long getNCons()
 	{
 		return nCons;
+	}
+	void setNCons(long nCons)
+	{
+		this->nCons = nCons;
 	}
 	long getNConsEq()
 	{
 		return nConsEq;
 	}
+	void setNConsEq(long nConsEq)
+	{
+		this->nConsEq = nConsEq;
+	}
 	long getNConsIneq()
 	{
 		return nConsIneq;
+	}
+	void setNConsIneq(long nConsIneq)
+	{
+		this->nConsIneq = nConsIneq;
 	}
 	// copy constructor
 	Problem(const Problem& prob);

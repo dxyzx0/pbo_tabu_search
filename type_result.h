@@ -1,0 +1,29 @@
+//
+// Created by psw on 5/20/24.
+//
+
+#ifndef PBO_HEURISTICS__TYPE_RESULT_H_
+#define PBO_HEURISTICS__TYPE_RESULT_H_
+
+enum SolveResult
+{
+	SOLVE_FEASIBLE = 0,
+	SOLVE_INFEASIBLE = 1,
+	SOLVE_OPTIMAL = 2,
+	SOLVE_UNKNOWN = -1
+};
+
+enum PresResult
+{
+	PRES_REDUCED = 0,
+	PRES_UNCHANGED = 1,
+	PRES_INFEASIBLE = 2
+};
+
+enum PropResult
+{
+	PROP_REDUCED = 0,
+	PROP_UNCHANGED = 1
+};
+
+#endif //PBO_HEURISTICS__TYPE_RESULT_H_

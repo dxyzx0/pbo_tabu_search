@@ -4,6 +4,7 @@
 
 #include "Problem.h"
 #include <cassert>
+#include <iostream>
 
 using namespace std;
 
@@ -19,19 +20,35 @@ Problem::Problem(AbcCallback& abcCallback)
 
 	assert (nCons == abcCallback.getRelOp().size() && nCons == abcCallback.getB().size());
 
+	for (const auto& [iConsRelOp, relop]: abcCallback.getRelOp())
+	{
+		if (relop == "=")
+		{
+			nConsEq += 1;
+		}
+		else
+		{
+			assert(relop == ">=");
+			nConsIneq += 1;
+		}
+	}
+
 	// initialize A_eq, A_ineq, b_eq, b_ineq, c
-	A_eq = make_shared< IntSpMat >(nCons, nVar);
-	A_ineq = make_shared< IntSpMat >(nCons, nVar);
-	b_eq = make_shared< IntSpVec >(nCons);
-	b_ineq = make_shared< IntSpVec >(nCons);
+	A_eq = make_shared< IntSpMat >(nConsEq, nVar);
+	A_ineq = make_shared< IntSpMat >(nConsIneq, nVar);
+	b_eq = make_shared< IntSpVec >(nConsEq);
+	b_ineq = make_shared< IntSpVec >(nConsIneq);
 	c = make_shared< IntSpVec >(nVar);
 
 	// update b_eq, b_ineq
+	long iCons_eq = 0;
+	long iCons_ineq = 0;
+	map< long, long > eq_cons_map, ineq_cons_map;
 	std::map< long, string > relOp_map;
 	for (auto i = 0; i < abcCallback.getB().size(); i++)
 	{
-		auto [iConsRelOp, relop] = abcCallback.getRelOp()[i];
-		auto [iConsB, b] = abcCallback.getB()[i];
+		const auto [iConsRelOp, relop] = abcCallback.getRelOp()[i];
+		const auto [iConsB, b] = abcCallback.getB()[i];
 
 		assert (iConsRelOp == iConsB);
 
@@ -40,14 +57,16 @@ Problem::Problem(AbcCallback& abcCallback)
 		relOp_map[iCons] = relop;
 		if (relop == "=")
 		{
-			nConsEq += 1;
-			b_eq->insert(iCons) = b;
+			b_eq->insert(iCons_eq) = b;
+			eq_cons_map[iCons] = iCons_eq;
+			iCons_eq++;
 		}
 		else
 		{
 			assert(relop == ">=");
-			nConsIneq += 1;
-			b_ineq->insert(iCons) = b;
+			b_ineq->insert(iCons_ineq) = b;
+			ineq_cons_map[iCons] = iCons_ineq;
+			iCons_ineq++;
 		}
 	}
 
@@ -66,13 +85,15 @@ Problem::Problem(AbcCallback& abcCallback)
 		if (relop == "=")
 		{
 			nnz_A_eq += 1;
-			A_eq->insert(iCons, idVar) = coeff;
+			auto iCons_eq = eq_cons_map.at(iCons);
+			A_eq->insert(iCons_eq, idVar) = coeff;
 		}
 		else
 		{
 			assert(relop == ">=");
 			nnz_A_ineq += 1;
-			A_ineq->insert(iCons, idVar) = coeff;
+			auto iCons_ineq = ineq_cons_map.at(iCons);
+			A_ineq->insert(iCons_ineq, idVar) = coeff;
 		}
 	}
 
@@ -81,6 +102,37 @@ Problem::Problem(AbcCallback& abcCallback)
 		auto [idVar, coeff] = abcCallback.getC()[i];
 		c->insert(idVar) = coeff;
 	}
+	// print out elements in A_eq
+//	for (auto i = 0; i < A_eq->outerSize(); i++)
+//	{
+//		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
+//		{
+//			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//		}
+//	}
+//	// print out elements in A_ineq
+//	for (auto i = 0; i < A_ineq->outerSize(); i++)
+//	{
+//		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
+//		{
+//			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//		}
+//	}
+//	// print out elements in b_eq
+//	for (auto i = 0; i < b_eq->size(); i++)
+//	{
+//		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
+//	}
+//	// print out elements in b_ineq
+//	for (auto i = 0; i < b_ineq->size(); i++)
+//	{
+//		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
+//	}
+//	// print out elements in c
+//	for (auto i = 0; i < c->size(); i++)
+//	{
+//		cout << "c(" << i << ") = " << c->coeff(i) << endl;
+//	}
 
 	assert(nConsEq + nConsIneq == nCons);
 	assert(nnz_A_eq + nnz_A_ineq == nnz);

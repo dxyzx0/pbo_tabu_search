@@ -7,5 +7,6 @@
 
 #include "type_int.h"
 #include "type_matrix.h"
+#include "type_result.h"
 
 #endif //PBO_HEURISTICS__TYPE_H_

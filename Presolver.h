@@ -5,10 +5,22 @@
 #ifndef PBO_HEURISTICS__PRESOLVER_H_
 #define PBO_HEURISTICS__PRESOLVER_H_
 
+#include <memory>
+#include "Problem.h"
+#include "Settings.h"
+#include "type_result.h"
+
+using namespace std;
+
+// abstract class for presolver
 class Presolver
 {
+ protected:
+	shared_ptr< Problem > prob;
+	shared_ptr< Settings > set;
  public:
-	virtual void presolve() = 0;
+	explicit Presolver(shared_ptr< Problem > problem, shared_ptr< Settings > settings = nullptr);
+	virtual PresResult presolve() = 0;
 	virtual void postsolve() = 0;
 };
 

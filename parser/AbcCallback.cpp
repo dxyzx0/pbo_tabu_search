@@ -11,7 +11,7 @@ using namespace std;
 void AbcCallback::objectiveTerm(IntegerType coeff, int idVar)
 {
 	DefaultCallback::objectiveTerm(coeff, idVar);
-	c.emplace_back(idVar, coeff);
+	c.emplace_back(idVar - 1, coeff);
 }
 
 void AbcCallback::metaData(int nbvar, int nbconstr)

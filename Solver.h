@@ -11,6 +11,7 @@
 #include "Presolver.h"
 #include "Propgators.h"
 #include "Settings.h"
+#include "type_result.h"
 
 using namespace std;
 
@@ -24,6 +25,7 @@ class Solver
 	shared_ptr< Settings > set;
  public:
 	explicit Solver(shared_ptr< Problem > prob, shared_ptr< Settings > settings = nullptr);
+	SolveResult solve();
 };
 
 #endif //PBO_HEURISTICS__SOLVER_H_

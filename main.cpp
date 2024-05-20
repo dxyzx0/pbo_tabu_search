@@ -6,6 +6,7 @@
 #include "parser/SimpleParser.h"
 #include "parser/AbcCallback.h"
 #include "Problem.h"
+#include "Solver.h"
 
 using namespace std;
 
@@ -36,6 +37,9 @@ int main(int argc, char* argv[])
 
 	assert(parser != nullptr);
 	Problem problem(parser->cb);
+
+	Solver solver(make_shared< Problem >(problem));
+	solver.solve();
 
 	return 0;
 }

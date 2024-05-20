@@ -5,8 +5,12 @@
 #ifndef PBO_HEURISTICS__PROPGATORS_H_
 #define PBO_HEURISTICS__PROPGATORS_H_
 
+#include "type_result.h"
+
 class Propgators
 {
+ public:
+	virtual PropResult propagate() = 0;
 
 };
 
