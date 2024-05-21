@@ -34,7 +34,7 @@ class Solver
 	void addDefaultPlugins();
 	SolveResult solve();
 	void initSolver();
-	PresResult presolve(SolveResult&);
+	PresResult presolve();
 };
 
 #endif //PBO_HEURISTICS__SOLVER_H_

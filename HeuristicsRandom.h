@@ -9,7 +9,7 @@
 
 class HeuristicsRandom : public Heuristics
 {
- private:
+ protected:
 	long nTryPerRound = 10000;
  public:
 	HeuristicsRandom(shared_ptr< Problem > prob, shared_ptr< Settings > settings);

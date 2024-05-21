@@ -44,6 +44,8 @@ if (useEigen)
             PresolverNaive.h
             HeuristicsRandom.cpp
             HeuristicsRandom.h
+            HeuristicsTabuSearch.cpp
+            HeuristicsTabuSearch.h
     )
     target_link_libraries(pbo_heur_eigen gmp gmpxx spdlog::spdlog)
     target_compile_definitions(pbo_heur_eigen PRIVATE useGMP useEigen)

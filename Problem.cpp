@@ -121,36 +121,36 @@ Problem::Problem(AbcCallback& abcCallback)
 
 	spdlog::info("Updated c");
 	// print out elements in A_eq
-	for (auto i = 0; i < A_eq->outerSize(); i++)
-	{
-		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
-		{
-			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
-		}
-	}
-	// print out elements in A_ineq
-	for (auto i = 0; i < A_ineq->outerSize(); i++)
-	{
-		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
-		{
-			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
-		}
-	}
-	// print out elements in b_eq
-	for (auto i = 0; i < b_eq->size(); i++)
-	{
-		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
-	}
-	// print out elements in b_ineq
-	for (auto i = 0; i < b_ineq->size(); i++)
-	{
-		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
-	}
-	// print out elements in c
-	for (auto i = 0; i < c->size(); i++)
-	{
-		cout << "c(" << i << ") = " << c->coeff(i) << endl;
-	}
+//	for (auto i = 0; i < A_eq->outerSize(); i++)
+//	{
+//		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
+//		{
+//			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//		}
+//	}
+//	// print out elements in A_ineq
+//	for (auto i = 0; i < A_ineq->outerSize(); i++)
+//	{
+//		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
+//		{
+//			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//		}
+//	}
+//	// print out elements in b_eq
+//	for (auto i = 0; i < b_eq->size(); i++)
+//	{
+//		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
+//	}
+//	// print out elements in b_ineq
+//	for (auto i = 0; i < b_ineq->size(); i++)
+//	{
+//		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
+//	}
+//	// print out elements in c
+//	for (auto i = 0; i < c->size(); i++)
+//	{
+//		cout << "c(" << i << ") = " << c->coeff(i) << endl;
+//	}
 
 	assert(nConsEq + nConsIneq == nCons);
 	assert(nnz_A_eq + nnz_A_ineq == nnz);

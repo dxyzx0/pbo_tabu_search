@@ -39,8 +39,7 @@ PresResult PresolverNaive::presolve()
 			IntegerType sum_red_row_i = 0;
 			for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
 			{
-				if (it.value() < 0) // only consider the positive coeff, because Ax >= b, x binary are assumed
-					sum_red_row_i += it.value();
+				sum_red_row_i += it.value() < 0 ? it.value() : 0;
 			}
 			if (sum_red_row_i >= b_i)
 			{
@@ -52,8 +51,7 @@ PresResult PresolverNaive::presolve()
 		IntegerType sum_inf_row_i = 0;
 		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
 		{
-			if (it.value() > 0) // only consider the positive coeff, because Ax >= b, x binary are assumed
-				sum_inf_row_i += it.value();
+			sum_inf_row_i += it.value() > 0 ? it.value() : 0;
 		}
 		if (sum_inf_row_i < b_i)
 		{
@@ -65,30 +63,59 @@ PresResult PresolverNaive::presolve()
 	auto A_eq = prob->getA_eq();
 	for (long i = 0; i < A_eq->outerSize(); i++)
 	{
-		IntegerType sum_pos_row_i = 0;
-		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
-		{
-			if (it.value() > 0) // only consider the positive coeff, because Ax >= b, x binary are assumed
-				sum_pos_row_i += it.value();
-		}
-		IntegerType sum_neg_row_i = 0;
-		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
-		{
-			if (it.value() < 0) // only consider the positive coeff, because Ax >= b, x binary are assumed
-				sum_neg_row_i += it.value();
-		}
 		IntegerType b_i = prob->getB_eq()->coeff(i);
-		if ((b_i < 0 && -sum_neg_row_i > b_i) || (b_i > 0 && sum_pos_row_i < b_i))
+		IntegerType sum_pos_row_i = 0;
+		if (b_i > 0)
 		{
-			inf_cons_eq.push_back(i);
-			cout << "Constraint " << i << " is infeasible, because " << sum_pos_row_i << " < " << b_i << " < "
-				 << -sum_neg_row_i << endl;
-			return PresResult::PRES_INFEASIBLE;
+			for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
+			{
+				sum_pos_row_i += it.value() > 0 ? it.value() : 0;
+			}
+			if (sum_pos_row_i < b_i)
+			{
+				inf_cons_eq.push_back(i);
+				cout << "Constraint " << i << " is infeasible, because " << sum_pos_row_i << " < " << b_i << endl;
+				return PresResult::PRES_INFEASIBLE;
+			}
+			else if (sum_pos_row_i == b_i)
+			{
+				cout << "Constraint " << i << " is redundant" << endl;
+				cout << "sum_pos_row_i = " << sum_pos_row_i << ", b_i = " << b_i << endl;
+				red_cons_eq.push_back(i);
+				A_eq->row(i) *= 0;
+			}
 		}
-		else if (sum_pos_row_i == b_i || -sum_neg_row_i == b_i)
+		else if (b_i < 0)
 		{
-			red_cons_eq.push_back(i);
-			A_eq->row(i) *= 0;
+			IntegerType sum_neg_row_i = 0;
+			for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
+			{
+				sum_neg_row_i += it.value() < 0 ? it.value() : 0;
+			}
+			if (sum_neg_row_i > b_i)
+			{
+				inf_cons_eq.push_back(i);
+				cout << "Constraint " << i << " is infeasible, because " << sum_neg_row_i << " > " << b_i << endl;
+				return PresResult::PRES_INFEASIBLE;
+			}
+		}
+		else
+		{
+			bool red_flag = true;
+			for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
+			{
+				if (it.value() != 0)
+				{
+					red_flag = false;
+					break;
+				}
+			}
+			if (red_flag)
+			{
+				cout << "Constraint " << i << " is redundant" << endl;
+				red_cons_eq.push_back(i);
+				A_eq->row(i) *= 0;
+			}
 		}
 	}
 	// remove redundant constraints by slicing the original constraints
@@ -129,14 +156,14 @@ PresResult PresolverNaive::presolve()
 	for (auto i : red_cons_ineq)
 	{
 		b_ineq->coeffRef(red_cons_ineq[i]) = 0;
-		cout << b_ineq->size() << endl;
+//		cout << b_ineq->size() << endl;
 	}
 	// remove redundant constraints in the right-hand side of the equality constraints
 	auto b_eq = prob->getB_eq();
 	for (auto i : red_cons_eq)
 	{
 		b_eq->coeffRef(red_cons_eq[i]) = 0;
-		cout << b_eq->size() << endl;
+//		cout << b_eq->size() << endl;
 	}
 	assert(A_ineq->rows() == b_ineq->size());
 	assert(A_eq->rows() == b_eq->size());
@@ -146,10 +173,13 @@ PresResult PresolverNaive::presolve()
 
 	if (red_cons_ineq.size() > 0 || red_cons_eq.size() > 0)
 	{
+		cout << "Reduced " << red_cons_ineq.size() << " inequality constraints and " << red_cons_eq.size()
+			 << " equality constraints" << endl;
 		return PresResult::PRES_REDUCED;
 	}
 	else
 	{
+		cout << "No redundant constraints found" << endl;
 		return PresResult::PRES_UNCHANGED;
 	}
 

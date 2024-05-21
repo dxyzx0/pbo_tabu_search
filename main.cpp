@@ -19,7 +19,7 @@ int main(int argc, char* argv[])
 	{
 		if (argc != 2)
 		{
-			cout << "usage: SimpleParser <filename>" << endl;
+			cout << "usage: pbo_heur_eigen <filename>" << endl;
 			return -1;
 		}
 		else
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
 			string filename = argv[1];
 			// assert filename ends with ".opb" or ".pb"
 			cout << "Parsing file: " << filename << endl;
-			assert(filename.substr(filename.find_last_of(".") + 1) == "opb" || filename.substr(filename.find_last_of(".") + 1) == "pb");
+			assert(filename.substr(filename.find_last_of('.') + 1) == "opb" || filename.substr(filename.find_last_of('.') + 1) == "pb");
 			parser = new SimpleParser< AbcCallback >(argv[1]);
 
 			parser->setAutoLinearize(true);

@@ -56,12 +56,12 @@ void AbcCallback::endConstraint()
 		iConsIneq++;
 	}
 
-	for (auto& t : tmp_triplet)
-	{
-		cout << t.row() << " " << t.col() << " " << t.value() << endl;
-	}
-	cout << "RelOp: " << iRelOp << endl;
-	cout << "b: " << get<1>(b.back()) << endl;
+//	for (auto& t : tmp_triplet)
+//	{
+//		cout << t.row() << " " << t.col() << " " << t.value() << endl;
+//	}
+//	cout << "RelOp: " << iRelOp << endl;
+//	cout << "b: " << get<1>(b.back()) << endl;
 
 	tmp_trip.clear();
 	iCons ++;

@@ -38,9 +38,10 @@ SolveResult Solver::solve()
 
 	// presolve
 	solveStage = Stage::INITPRESOLVE;
-	PresResult presResult = presolve(result);
-	if (result == SolveResult::SOLVE_INFEASIBLE)
+	PresResult presResult = presolve();
+	if (presResult == PresResult::PRES_INFEASIBLE)
 	{
+		result = SolveResult::SOLVE_INFEASIBLE;
 		return result;
 	}
 	solveStage = Stage::PRESOLVED;
@@ -80,7 +81,7 @@ SolveResult Solver::solve()
 	return result;
 }
 
-PresResult Solver::presolve(SolveResult& result)
+PresResult Solver::presolve()
 {
 	PresResult presResult = PresResult::PRES_UNCHANGED;
 	for (auto& presolver : presolvers)
@@ -92,7 +93,7 @@ PresResult Solver::presolve(SolveResult& result)
 		}
 		else if (currentPresResult == PresResult::PRES_INFEASIBLE)
 		{
-			result = SolveResult::SOLVE_INFEASIBLE;
+			presResult = PresResult::PRES_INFEASIBLE;
 		}
 	}
 	return presResult;
