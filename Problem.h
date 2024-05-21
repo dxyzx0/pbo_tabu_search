@@ -26,8 +26,8 @@ class Problem
  private:
 	shared_ptr< IntSpMat > A_eq;
 	shared_ptr< IntSpMat > A_ineq;
-	shared_ptr< IntSpVec > b_eq;
-	shared_ptr< IntSpVec > b_ineq;
+	shared_ptr< IntVec > b_eq;
+	shared_ptr< IntVec > b_ineq;
 	shared_ptr< IntSpVec > c;
 
 	long nVar;
@@ -47,11 +47,11 @@ class Problem
 	{
 		return A_ineq;
 	}
-	shared_ptr< IntSpVec > getB_eq()
+	shared_ptr< IntVec > getB_eq()
 	{
 		return b_eq;
 	}
-	shared_ptr< IntSpVec > getB_ineq()
+	shared_ptr< IntVec > getB_ineq()
 	{
 		return b_ineq;
 	}
@@ -92,8 +92,10 @@ class Problem
 		this->nConsIneq = nConsIneq;
 	}
 	bool isFeasible(const IntSpVec& x);
+	bool isFeasible(const IntVec& x);
 //	bool isFeasible(const IntSpMat& X);
 	IntegerType getObj(const IntSpVec& x);
+	IntegerType getObj(const IntVec& x);
 	// copy constructor
 	Problem(const Problem& prob);
 	// copy assignment

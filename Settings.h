@@ -19,7 +19,7 @@ class Settings
 
 	// solution related
 	IntegerType bestObj = PBOINTMAX;
-	shared_ptr< IntSpVec > bestSol = nullptr;
+	shared_ptr< IntVec > bestSol = nullptr;
 
 	// limits related
 	long maxIter = 10;

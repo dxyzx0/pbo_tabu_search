@@ -12,6 +12,9 @@ typedef Eigen::SparseMatrix< IntegerType, Eigen::RowMajor > IntSpMat;
 //typedef Eigen::SparseMatrix< IntegerType > IntSpMat;
 typedef Eigen::SparseVector< IntegerType > IntSpVec;
 typedef Eigen::SparseVector< bool > BinSpVec;
+#include "Eigen/Dense"
+typedef Eigen::Matrix< IntegerType, Eigen::Dynamic, Eigen::Dynamic > IntMat;
+typedef Eigen::Vector< IntegerType, Eigen::Dynamic > IntVec;
 #else
 #warning this MatrixType and VectorType may not be suitable for some input file. Consider using Eigen
 #error "MatrixType and VectorType must be defined"

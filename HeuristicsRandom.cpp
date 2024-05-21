@@ -18,7 +18,7 @@ HeurResult HeuristicsRandom::heuristic()
 {
 	// generate
 	IntegerType bestObj = set->bestObj;
-	shared_ptr< IntSpVec > bestSol = set->bestSol;
+	shared_ptr< IntVec > bestSol = set->bestSol;
 	HeurResult result = HeurResult::HEUR_NOTFIND;
 	for (int i = 0; i < nTryPerRound; i++)
 	{
@@ -26,7 +26,7 @@ HeurResult HeuristicsRandom::heuristic()
 		// test if it is a solution
 		// if yes, return
 		long nVar = prob->getNVar();
-		auto x = gen_rnd_spvec(nVar, nVar / 2);
+		shared_ptr< IntVec > x = gen_rnd_spvec(nVar, nVar / 2);
 		if (prob->isFeasible(*x))
 		{
 			auto crntObj = prob->getObj(*x);
@@ -61,7 +61,7 @@ HeuristicsRandom::HeuristicsRandom(shared_ptr< Problem > prob, shared_ptr< Setti
 {
 }
 
-shared_ptr< IntSpVec > HeuristicsRandom::gen_rnd_spvec(long nVar, long nNonZero)
+shared_ptr< IntVec > HeuristicsRandom::gen_rnd_spvec(long nVar, long nNonZero)
 {
 	IntSpVec x(nVar);
 	const int N = nVar;    // Total number of elements in the SparseVector
@@ -78,16 +78,24 @@ shared_ptr< IntSpVec > HeuristicsRandom::gen_rnd_spvec(long nVar, long nNonZero)
 	// Shuffle the indices
 	std::shuffle(indices.begin(), indices.end(), g);
 
-	// Create a SparseVector with a size of N
-	auto spVec = make_shared< IntSpVec >(nVar);
-
-	// Insert ones at the first numOnes shuffled indices
+	// get an array with indices filled with 1
+	auto vec = make_shared< IntVec >(N);
 	for (int i = 0; i < numOnes; ++i)
 	{
-		spVec->insert(indices[i]) = 1;
+		(*vec)[indices[i]] = 1;
 	}
+//	IntSpVec spVec = vec->sparseView();
 
-	// Finalize the vector setup
-	spVec->finalize();
-	return spVec;
+//	// Create a SparseVector with a size of N
+//	auto spVec = make_shared< IntSpVec >(nVar);
+//
+//	// Insert ones at the first numOnes shuffled indices
+//	for (int i = 0; i < numOnes; ++i)
+//	{
+//		spVec->insert(indices[i]) = 1;
+//	}
+//
+//	// Finalize the vector setup
+//	spVec->finalize();
+	return vec;
 }
