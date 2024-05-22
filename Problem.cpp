@@ -159,6 +159,12 @@ Problem::Problem(AbcCallback& abcCallback)
 	A_eq->finalize();
 	c->finalize();
 
+	// summarize the problem
+	cout << "nVar = " << nVar << endl;
+	cout << "nCons = " << nCons << " (nConsEq = " << nConsEq << ", nConsIneq = " << nConsIneq << ")" << endl;
+	cout << "nnz = " << nnz << " (nnz_A_eq = " << nnz_A_eq << ", nnz_A_ineq = " << nnz_A_ineq << ")" << endl;
+	cout << "nnz_c = " << c->nonZeros() << endl;
+
 }
 
 Problem::Problem(const Problem& prob)
@@ -321,6 +327,18 @@ bool Problem::isFeasible(const IntVec& x)
 	{
 		return false;
 	}
+}
+
+IntegerType Problem::calNInf(const IntVec& x)
+{
+	auto lhs_eq = (*A_eq) * x;
+	auto lhs_ineq = (*A_ineq) * x;
+//	cout << "lhs_eq = " << lhs_eq << endl;
+//	cout << "lhs_ineq = " << lhs_ineq << endl;
+
+	auto res_eq = lhs_eq.cwiseEqual(*b_eq).cast< long >();
+	auto res_ineq = lhs_ineq.cwiseMax(*b_ineq).cwiseEqual(lhs_ineq).cast< long >();
+    return res_eq.sum() + res_ineq.sum();
 }
 
 IntegerType Problem::getObj(const IntSpVec& x)

@@ -26,7 +26,7 @@ HeurResult HeuristicsRandom::heuristic()
 		// test if it is a solution
 		// if yes, return
 		long nVar = prob->getNVar();
-		shared_ptr< IntVec > x = gen_rnd_spvec(nVar, nVar / 2);
+		shared_ptr< IntVec > x = gen_rnd_vec(nVar, nVar / 2);
 		if (prob->isFeasible(*x))
 		{
 			auto crntObj = prob->getObj(*x);
@@ -61,7 +61,7 @@ HeuristicsRandom::HeuristicsRandom(shared_ptr< Problem > prob, shared_ptr< Setti
 {
 }
 
-shared_ptr< IntVec > HeuristicsRandom::gen_rnd_spvec(long nVar, long nNonZero)
+shared_ptr< IntVec > HeuristicsRandom::gen_rnd_vec(long nVar, long nNonZero)
 {
 	IntSpVec x(nVar);
 	const int N = nVar;    // Total number of elements in the SparseVector
@@ -84,7 +84,6 @@ shared_ptr< IntVec > HeuristicsRandom::gen_rnd_spvec(long nVar, long nNonZero)
 	{
 		(*vec)[indices[i]] = 1;
 	}
-//	IntSpVec spVec = vec->sparseView();
 
 //	// Create a SparseVector with a size of N
 //	auto spVec = make_shared< IntSpVec >(nVar);
@@ -99,3 +98,12 @@ shared_ptr< IntVec > HeuristicsRandom::gen_rnd_spvec(long nVar, long nNonZero)
 //	spVec->finalize();
 	return vec;
 }
+
+shared_ptr< IntSpVec > HeuristicsRandom::gen_rnd_spvec(long nVar, long nNonZero)
+{
+	auto vec = HeuristicsRandom::gen_rnd_vec(nVar, nNonZero);
+	auto spVec = make_shared< IntSpVec >(vec->sparseView());
+
+	return spVec;
+}
+

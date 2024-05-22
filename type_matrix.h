@@ -8,8 +8,8 @@
 // define Matrix and Vector Type
 #ifdef useEigen
 #include "Eigen/Sparse"
-typedef Eigen::SparseMatrix< IntegerType, Eigen::RowMajor > IntSpMat;
-//typedef Eigen::SparseMatrix< IntegerType > IntSpMat;
+typedef Eigen::SparseMatrix< IntegerType, Eigen::ColMajor > IntSpMat;
+typedef Eigen::SparseMatrix< IntegerType, Eigen::RowMajor > IntSpRMat;
 typedef Eigen::SparseVector< IntegerType > IntSpVec;
 typedef Eigen::SparseVector< bool > BinSpVec;
 #include "Eigen/Dense"

@@ -93,6 +93,7 @@ class Problem
 	}
 	bool isFeasible(const IntSpVec& x);
 	bool isFeasible(const IntVec& x);
+	IntegerType calNInf(const IntVec& x);
 //	bool isFeasible(const IntSpMat& X);
 	IntegerType getObj(const IntSpVec& x);
 	IntegerType getObj(const IntVec& x);
