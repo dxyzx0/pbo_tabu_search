@@ -77,13 +77,6 @@ PresResult PresolverNaive::presolve()
 				cout << "Constraint " << i << " is infeasible, because " << sum_pos_row_i << " < " << b_i << endl;
 				return PresResult::PRES_INFEASIBLE;
 			}
-			else if (sum_pos_row_i == b_i)
-			{
-				cout << "Constraint " << i << " is redundant" << endl;
-				cout << "sum_pos_row_i = " << sum_pos_row_i << ", b_i = " << b_i << endl;
-				red_cons_eq.push_back(i);
-				A_eq->row(i) *= 0;
-			}
 		}
 		else if (b_i < 0)
 		{
@@ -153,16 +146,16 @@ PresResult PresolverNaive::presolve()
 
 	// remove redundant constraints in the right-hand side of the inequality constraints
 	auto b_ineq = prob->getB_ineq();
-	for (auto i : red_cons_ineq)
+	for (auto iCons : red_cons_ineq)
 	{
-		b_ineq->coeffRef(red_cons_ineq[i]) = 0;
+		b_ineq->coeffRef(iCons) = 0;
 //		cout << b_ineq->size() << endl;
 	}
 	// remove redundant constraints in the right-hand side of the equality constraints
 	auto b_eq = prob->getB_eq();
-	for (auto i : red_cons_eq)
+	for (auto iCons : red_cons_eq)
 	{
-		b_eq->coeffRef(red_cons_eq[i]) = 0;
+		b_eq->coeffRef(iCons) = 0;
 //		cout << b_eq->size() << endl;
 	}
 	assert(A_ineq->rows() == b_ineq->size());
@@ -171,7 +164,7 @@ PresResult PresolverNaive::presolve()
 	prob->setNConsEq(A_eq->rows());
 	prob->setNCons(A_ineq->rows() + A_eq->rows());
 
-	if (red_cons_ineq.size() > 0 || red_cons_eq.size() > 0)
+	if (!red_cons_ineq.empty() || !red_cons_eq.empty())
 	{
 		cout << "Reduced " << red_cons_ineq.size() << " inequality constraints and " << red_cons_eq.size()
 			 << " equality constraints" << endl;
