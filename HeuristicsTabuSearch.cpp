@@ -5,6 +5,7 @@
 #include "HeuristicsTabuSearch.h"
 #include <ranges>
 #include <spdlog/spdlog.h>
+#include <queue>
 
 HeurResult HeuristicsTabuSearch::heuristic()
 {
@@ -28,12 +29,8 @@ HeurResult HeuristicsTabuSearch::heuristic()
 		spdlog::info("(*) Initial score = {}", score_x.get_str());
 		for (long j = 0; j < nTabuIterMax; j++)
 		{
-			spdlog::info("(**) Tabu search iteration {}",
-				j,
-				" score = {}",
-				score_x.get_str(),
-				" current best score = {}",
-				best_score.get_str());
+			spdlog::info("(**) Tabu search iteration {}, score = {}, best score = {}",
+				j, score_x.get_str(), best_score.get_str());
 			if (isFeasible(*Ax_b_ineq, *Ax_b_eq))
 			{
 				for (long l = 0; l < nVar; l++)
@@ -59,19 +56,35 @@ HeurResult HeuristicsTabuSearch::heuristic()
 			spdlog::info("(**) Infeasible solution, start local search");
 			auto best_score_j = score_x;
 			long best_k = -1;
+			long max_k = max(nVar / topkdiv, topkmin);
+
+// Define a priority queue to store the top k scores and their indices
+			std::priority_queue<std::pair<IntegerType, long>, std::vector<std::pair<IntegerType, long>>, std::greater<>> topk_scores;
+
 			for (long k = 0; k < nVar; k++)
 			{
 				auto [score_k, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(k, *x, *Ax_b_ineq, *Ax_b_eq);
 				if ((score_k > best_score_j && tabuList[k] <= j) || (score_k > best_score))
 				{  // greedy
-//					spdlog::info("(***) score_k, best_score_j, best_score = {}, {}, {}",
-//						score_k.get_str(),
-//						best_score_j.get_str(),
-//						best_score.get_str());
-					best_score_j = score_k;
-					best_k = k;
+					// Add the score and index to the priority queue
+					topk_scores.emplace(score_k, k);
+					// If the size of the queue exceeds k, remove the smallest element
+					if (topk_scores.size() > max_k) {
+						topk_scores.pop();
+					}
+				}
+			}
+			// If the size of the queue is less than k, set k to the size of the queue
+			auto rand_k = !topk_scores.empty() ? topk_scores.size() : 0;
+			while (rand_k-- > 0) {
+				auto [score_k, k] = topk_scores.top();
+				best_score_j = score_k;
+				best_k = k;
+				if (rand_k == 0) {
+					auto [score_k_test, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(k, *x, *Ax_b_ineq, *Ax_b_eq);
 					Ax_b_ineq = Ax_b_ineq_k;
 					Ax_b_eq = Ax_b_eq_k;
+					assert(score_k == score_k_test);
 
 					if (best_score_j > best_score)
 					{
@@ -81,7 +94,9 @@ HeurResult HeuristicsTabuSearch::heuristic()
 						nConsecutiveNonImproving = 0;
 					}
 				}
+
 			}
+
 			if (best_k != -1)
 			{
 				spdlog::info("(**) Found a better move {} with score = {}", best_k, best_score_j.get_str());

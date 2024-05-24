@@ -15,11 +15,13 @@ class HeuristicsTabuSearch : public HeuristicsRandom {
 protected:
     long nTabuListMax = 10;
     long nTabuTenure = 10;
-    long nTabuIterMax = 1000;
+    long nTabuIterMax = 10000;
     unordered_map<long, size_t> tabuList;  // key: hash of move, value: the iteration when the move is allowed
     IntegerType w_den = 0;
     IntegerType w_num = 1;
 	int infMeasure = 1; // 0: nInf, 1: rInf
+	long topkmin = 10;
+	long topkdiv = 100;
 public:
     HeuristicsTabuSearch(shared_ptr<Problem> prob, shared_ptr<Settings> settings);
     HeurResult heuristic() override;
