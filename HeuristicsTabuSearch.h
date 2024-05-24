@@ -19,6 +19,7 @@ protected:
     unordered_map<long, size_t> tabuList;  // key: hash of move, value: the iteration when the move is allowed
     IntegerType w_den = 0;
     IntegerType w_num = 1;
+	int infMeasure = 1; // 0: nInf, 1: rInf
 public:
     HeuristicsTabuSearch(shared_ptr<Problem> prob, shared_ptr<Settings> settings);
     HeurResult heuristic() override;
@@ -27,7 +28,8 @@ public:
 
     bool isFeasible(IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
 
-    IntegerType infeasibility(IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
+    IntegerType nInf(IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
+	IntegerType rInf(IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
 
     IntegerType score(long &i, IntVec &x, IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
 

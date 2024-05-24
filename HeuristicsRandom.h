@@ -14,7 +14,7 @@ class HeuristicsRandom : public Heuristics
  public:
 	HeuristicsRandom(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	HeurResult heuristic() override;
-	static shared_ptr< IntVec > gen_rnd_vec(long nVar, long nNonZero);
+	static shared_ptr< IntVec > gen_rnd_vec(long nVar, long nNonZero, shared_ptr< IntVec > x = nullptr);
 	static shared_ptr< IntSpVec > gen_rnd_spvec(long nVar, long nNonZero);
 
 };
