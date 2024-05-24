@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.25)
 project(PBO_Heuristics)
 
 set(CMAKE_CXX_STANDARD 23)
@@ -15,6 +15,11 @@ target_link_libraries(parser gmp gmpxx)
 target_compile_definitions(parser PRIVATE useGMP)
 
 # add Eigen as a dependency
+option(useCONDA "Use Conda" ON)
+if (useCONDA)
+    list(APPEND CMAKE_PREFIX_PATH "/home/optimi/spu/mambaforge/envs/cpp")
+    message(STATUS "CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}")
+endif ()
 option(useEigen "Use Eigen" ON)
 if (useEigen)
     find_package(spdlog CONFIG REQUIRED)

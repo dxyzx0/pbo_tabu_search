@@ -5,6 +5,7 @@
 #include "Solver.h"
 #include "PresolverNaive.h"
 #include "HeuristicsRandom.h"
+#include "HeuristicsTabuSearch.h"
 
 #include <memory>
 
@@ -19,7 +20,7 @@ Solver::Solver(shared_ptr< Problem > prob, shared_ptr< Settings > settings)
 void Solver::addDefaultPlugins()
 {
 	presolvers.push_back(make_shared< PresolverNaive >(tran_prob, set));
-	heuristics.push_back(make_shared< HeuristicsRandom >(tran_prob, set));
+	heuristics.push_back(make_shared< HeuristicsTabuSearch >(tran_prob, set));
 }
 
 void Solver::initSolver()

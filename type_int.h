@@ -12,6 +12,7 @@
 typedef mpz_class IntegerType;
 
 #define PBOINTMAX 2e50 // FIXME: numeric_limits< mpz_class >::max() has bug
+#define PBOINTMIN -2e50 // FIXME: numeric_limits< mpz_class >::min() has bug
 
 #else
 
@@ -19,6 +20,7 @@ typedef mpz_class IntegerType;
 typedef long IntegerType;
 
 #define PBOINTMAX numeric_limits< IntegerType >::max()
+#define PBOINTMIN numeric_limits< IntegerType >::min()
 
 #endif
 
