@@ -37,117 +37,23 @@ HeurResult HeuristicsTabuSearch::heuristic()
 		{
 			spdlog::info("(**) Tabu search iteration {}, score = {}, best score = {}",
 				j, score_x.get_str(), best_score.get_str());
-			if (isFeasible(*Ax_b_ineq, *Ax_b_eq))
-			{
-//				auto [Ax_b_ineq_test, Ax_b_eq_test] = calAxb(*x);
-//				test_isFeasible(*Ax_b_ineq_test, *Ax_b_eq_test, *Ax_b_ineq, *Ax_b_eq);
-				nSolFound++;  // record the number of solutions found
-				IntegerType crntObj = prob->getObj(*x);
-				spdlog::info("(**) Found a feasible solution with obj = {}", crntObj.get_str());
-				if (crntObj < bestObj)
-				{
-					nBestSolFound++;  // record the number of best solutions found
-					// format solution into a string
-					std::stringstream ss;
-					for (long l = 0; l < nVar; l++)
-					{
-						ss << (*x)[l].get_str() << " ";
-					}
-					std::string solStr = ss.str();
-					spdlog::info("(**) Feasible solution found: {}", solStr);
 
-					spdlog::info("(**) Found a better solution with obj = {}", crntObj.get_str());
-					set->bestObj = bestObj = crntObj;
-					// update best solution using a copy of x
-					set->bestSol = make_shared< IntVec >(*x);
-					res = HeurResult::HEUR_FINDBESTSOL;
-					cout << "Found a better solution with obj = " << bestObj << endl;
-				}
-				else
-				{
-					res = res == HeurResult::HEUR_FINDBESTSOL ? res : HeurResult::HEUR_FINDBADSOL;
-				}
-			}
-			spdlog::info("(**) Infeasible solution, start local search");
+			// test feasibility and update best solution
+			testFeasAndUpdateBest(Ax_b_ineq, Ax_b_eq, x, res, bestObj);
+
+			// init
 			IntegerType best_score_j = score_x;
 			long best_k = -1;
-			long max_k = max(nVar / topkdiv, topkmin);
 
-			// random select a move from the top k moves
-			// Define a priority queue to store the top k scores and their indices
-			auto comp = [](const std::tuple< IntegerType, long, shared_ptr< IntVec >, shared_ptr< IntVec > >& a,
-				std::tuple< IntegerType, long, shared_ptr< IntVec >, shared_ptr< IntVec > >& b)
-			{
-			  return std::get< 0 >(a) > std::get< 0 >(b);
-			};
-			std::priority_queue< std::tuple< IntegerType, long, shared_ptr< IntVec >, shared_ptr< IntVec > >,
-								 std::vector< std::tuple< IntegerType,
-														  long,
-														  shared_ptr< IntVec >,
-														  shared_ptr< IntVec > > >,
-								 decltype(comp) > topk_scores;
-
-			for (long k = 0; k < nVar; k++)
-			{
-				auto [score_k, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(*x, *Ax_b_ineq, *Ax_b_eq, k);
-				if ((score_k > best_score_j && varIsNotTabu(k, j)) || (score_k > best_score))
-				{  // greedy
-					// Add the score and index to the priority queue
-					topk_scores.emplace(score_k, k, Ax_b_ineq_k, Ax_b_eq_k);
-					// If the size of the queue exceeds k, remove the smallest element
-					if (topk_scores.size() > max_k)
-					{
-						topk_scores.pop();
-					}
-				}
-			}
-			// If the size of the queue is less than k, set k to the size of the queue
-			size_t rand_k = !topk_scores.empty() ? topk_scores.size() : 0;
-			while (rand_k-- > 0)
-			{
-				auto [score_k, k, Ax_b_ineq_k, Ax_b_eq_k] = topk_scores.top();
-				if (rand_k == 0)
-				{
-					best_score_j = score_k;
-					best_k = k;
-//					auto [score_k_test, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(*x, *Ax_b_ineq, *Ax_b_eq, k);
-					Ax_b_ineq = Ax_b_ineq_k;
-					Ax_b_eq = Ax_b_eq_k;
-//					assert(score_k == score_k_test);
-
-					if (best_score_j > best_score)
-					{
-						spdlog::info("(**) Found a new best local candidate with score = {}", best_score_j.get_str());
-						best_score = best_score_j;
-						nConsecutiveNonImproving = 0;
-					}
-				}
-			}
-
-			if (best_k != -1)
-			{
-				spdlog::info("(**) Found a better move {} with score = {}", best_k, best_score_j.get_str());
-				(*x)[best_k] = 1 - (*x)[best_k];
-
-				updateTabuList(best_k, j);
-				score_x = best_score_j;
-			}
-			else
-			{
-				// randomly select a move
-				nConsecutiveNonImproving++;
-				long nFlip = min(nVar / 10 * nConsecutiveNonImproving, nVar * 2 / 3);
-				spdlog::info("(**) No better move found in {} consecutive iterations, randomly filp {} vars",
-					nConsecutiveNonImproving, nFlip);
-				x = gen_rnd_vec(nVar, nFlip, x);
-				tie(Ax_b_ineq, Ax_b_eq) = calAxb(*x);
-				score_x = score(*x, *Ax_b_ineq, *Ax_b_eq);
-				spdlog::info("(**) Randomly filped x with score = {}", score_x.get_str());
-			}
-
-//			auto [Ax_b_ineq_test, Ax_b_eq_test] = calAxb(*x);
-//			assert(test_isFeasible(*Ax_b_ineq_test, *Ax_b_eq_test, *Ax_b_ineq, *Ax_b_eq));
-
+			randomSelectMoveFromTopk(Ax_b_ineq,
+				Ax_b_eq,
+				x,
+				score_x,
+				best_score,
+				best_score_j,
+				nConsecutiveNonImproving,
+				best_k,
+				j);
 
 			// update weight for objective function
 			updateWeight();
@@ -231,4 +137,128 @@ HeuristicsTabuSearch::HeuristicsTabuSearch(shared_ptr< Problem > prob, shared_pt
 	prob, settings)
 {
 	initTabuList();
+}
+
+void HeuristicsTabuSearch::testFeasAndUpdateBest(const shared_ptr< IntVec > Ax_b_ineq,
+	const shared_ptr< IntVec > Ax_b_eq,
+	const shared_ptr< IntVec > x,
+	HeurResult& res,
+	IntegerType& bestObj)
+{
+	if (isFeasible(*Ax_b_ineq, *Ax_b_eq))
+	{
+//				auto [Ax_b_ineq_test, Ax_b_eq_test] = calAxb(*x);
+//				test_isFeasible(*Ax_b_ineq_test, *Ax_b_eq_test, *Ax_b_ineq, *Ax_b_eq);
+		nSolFound++;  // record the number of solutions found
+		IntegerType crntObj = prob->getObj(*x);
+		spdlog::info("(**) Found a feasible solution with obj = {}", crntObj.get_str());
+		if (crntObj < bestObj)
+		{
+			nBestSolFound++;  // record the number of best solutions found
+			// format solution into a string
+			std::stringstream ss;
+			for (long l = 0; l < prob->getNVar(); l++)
+			{
+				ss << (*x)[l].get_str() << " ";
+			}
+			std::string solStr = ss.str();
+			spdlog::info("(**) Feasible solution found: {}", solStr);
+
+			spdlog::info("(**) Found a better solution with obj = {}", crntObj.get_str());
+			set->bestObj = bestObj = crntObj;
+			// update best solution using a copy of x
+			set->bestSol = make_shared< IntVec >(*x);
+			res = HeurResult::HEUR_FINDBESTSOL;
+			cout << "Found a better solution with obj = " << bestObj << endl;
+		}
+		else
+		{
+			res = res == HeurResult::HEUR_FINDBESTSOL ? res : HeurResult::HEUR_FINDBADSOL;
+		}
+	}
+}
+
+void HeuristicsTabuSearch::randomSelectMoveFromTopk(shared_ptr< IntVec > Ax_b_ineq,
+	shared_ptr< IntVec > Ax_b_eq,
+	shared_ptr< IntVec > x,
+	IntegerType& score_x,
+	IntegerType& best_score,
+	IntegerType& best_score_j,
+	long& nConsecutiveNonImproving,
+	long& best_k,
+	long& j)
+{
+	long nVar = prob->getNVar();
+	long max_k = max(nVar / topkdiv, topkmin);
+
+	// random select a move from the top k moves
+	// Define a priority queue to store the top k scores and their indices
+	auto comp = [](const std::tuple< IntegerType, long, shared_ptr< IntVec >, shared_ptr< IntVec > >& a,
+		std::tuple< IntegerType, long, shared_ptr< IntVec >, shared_ptr< IntVec > >& b)
+	{
+	  return std::get< 0 >(a) > std::get< 0 >(b);
+	};
+	std::priority_queue< std::tuple< IntegerType, long, shared_ptr< IntVec >, shared_ptr< IntVec > >,
+						 std::vector< std::tuple< IntegerType,
+												  long,
+												  shared_ptr< IntVec >,
+												  shared_ptr< IntVec > > >,
+						 decltype(comp) > topk_scores;
+
+	for (long k = 0; k < nVar; k++)
+	{
+		auto [score_k, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(*x, *Ax_b_ineq, *Ax_b_eq, k);
+		if ((score_k > best_score_j && varIsNotTabu(k, j)) || (score_k > best_score))
+		{  // greedy
+			// Add the score and index to the priority queue
+			topk_scores.emplace(score_k, k, Ax_b_ineq_k, Ax_b_eq_k);
+			// If the size of the queue exceeds k, remove the smallest element
+			if (topk_scores.size() > max_k)
+			{
+				topk_scores.pop();
+			}
+		}
+	}
+	// If the size of the queue is less than k, set k to the size of the queue
+	size_t rand_k = !topk_scores.empty() ? topk_scores.size() : 0;
+	while (rand_k-- > 0)
+	{
+		auto [score_k, k, Ax_b_ineq_k, Ax_b_eq_k] = topk_scores.top();
+		if (rand_k == 0)
+		{
+			best_score_j = score_k;
+			best_k = k;
+//					auto [score_k_test, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(*x, *Ax_b_ineq, *Ax_b_eq, k);
+			Ax_b_ineq = Ax_b_ineq_k;
+			Ax_b_eq = Ax_b_eq_k;
+//					assert(score_k == score_k_test);
+
+			if (best_score_j > best_score)
+			{
+				spdlog::info("(**) Found a new best local candidate with score = {}", best_score_j.get_str());
+				best_score = best_score_j;
+				nConsecutiveNonImproving = 0;
+			}
+		}
+	}
+	if (best_k != -1)
+	{
+		spdlog::info("(**) Found a better move {} with score = {}", best_k, best_score_j.get_str());
+		(*x)[best_k] = 1 - (*x)[best_k];
+
+		updateTabuList(best_k, j);
+		score_x = best_score_j;
+	}
+	else
+	{
+		// randomly select a move
+		nConsecutiveNonImproving++;
+		long nFlip = min(nVar / 10 * nConsecutiveNonImproving, nVar * 2 / 3);
+		spdlog::info("(**) No better move found in {} consecutive iterations, randomly flip {} vars",
+			nConsecutiveNonImproving, nFlip);
+		x = gen_rnd_vec(nVar, nFlip, x);
+		tie(Ax_b_ineq, Ax_b_eq) = calAxb(*x);
+		score_x = score(*x, *Ax_b_ineq, *Ax_b_eq);
+		spdlog::info("(**) Randomly flipped x with score = {}", score_x.get_str());
+	}
 }

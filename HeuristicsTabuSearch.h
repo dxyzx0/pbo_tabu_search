@@ -17,6 +17,7 @@ enum class InfMeasure
 	rInf,
 	objNInf,
 	objRInf,
+	normedRInf
 };
 
 class HeuristicsTabuSearch : public HeuristicsRandom
@@ -64,6 +65,17 @@ class HeuristicsTabuSearch : public HeuristicsRandom
 
 	void initWeight() { w_num = w_num_init; w_den = w_den_init; }
 	void updateWeight() { w_num = nBestSolFound; w_den = 1;}
+
+	void testFeasAndUpdateBest(const shared_ptr< IntVec > Ax_b_ineq, const shared_ptr< IntVec > Ax_b_eq, const shared_ptr< IntVec > x, HeurResult& res, IntegerType& bestObj);
+	void randomSelectMoveFromTopk(shared_ptr< IntVec > Ax_b_ineq,
+		shared_ptr< IntVec > Ax_b_eq,
+		shared_ptr< IntVec > x,
+		IntegerType& score_x,
+		IntegerType& best_score,
+		IntegerType& best_score_j,
+		long& nConsecutiveNonImproving,
+		long& best_k,
+		long& j);
 
 };
 
