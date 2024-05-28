@@ -13,11 +13,19 @@ using namespace std;
 
 enum class InfMeasure
 {
-	nInf,
-	rInf,
-	objNInf,
-	objRInf,
-	normedRInf
+	negNInf,
+	negRInf,
+	negObjNInf,
+	negObjRInf,
+};
+
+enum class VarScore
+{
+	negNInf,
+	negRInf,
+	negObjNInf,
+	negObjRInf,
+	normedNegRInf,
 };
 
 class HeuristicsTabuSearch : public HeuristicsRandom
@@ -31,8 +39,10 @@ class HeuristicsTabuSearch : public HeuristicsRandom
 	// random start or all zero start
 	bool randomStart = false;
 
-	// infeasibility measure: 0: nInf, 1: rInf, 2: objNInf, 3: objRInf
-	InfMeasure infMeasure = InfMeasure::rInf;
+	// infeasibility measure of solution: 0: nInf, 1: rInf, 2: objNInf, 3: objRInf
+	InfMeasure infMeasure = InfMeasure::negRInf;
+	// score of variable: 0: nInf, 1: rInf, 2: objNInf, 3: objRInf, 4: normedRInf
+	VarScore varScore = VarScore::negRInf;
 
 	// randomly select a move among topk moves, which is determined by max(topkmin, nVar / topkdiv)
 	long topkmin = 10;
@@ -52,9 +62,9 @@ class HeuristicsTabuSearch : public HeuristicsRandom
 	HeuristicsTabuSearch(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	HeurResult heuristic() override;
 
-	void initTabuList() { for (long i = 0; i < prob->getNVar(); i++) tabuList[i] = 0; }
-	void updateTabuList(long i, long t) { tabuList[i] = t + nTabuTenure; }
-	bool varIsNotTabu(long i, long t) { return tabuList[i] <= t; }
+	void initTabuList();
+	void updateTabuList(long i, long t);
+	bool varIsNotTabu(long i, long t);
 
 	tuple< shared_ptr< IntVec >, shared_ptr< IntVec > > calAxb(IntVec& x);
 
@@ -63,13 +73,17 @@ class HeuristicsTabuSearch : public HeuristicsRandom
 	tuple< IntegerType, shared_ptr< IntVec >, shared_ptr< IntVec > >
 	score_with_info(const IntVec& x, const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, long& i);
 
-	void initWeight() { w_num = w_num_init; w_den = w_den_init; }
-	void updateWeight() { w_num = nBestSolFound; w_den = 1;}
+	void initWeight();
+	void updateWeight();
 
-	void testFeasAndUpdateBest(const shared_ptr< IntVec > Ax_b_ineq, const shared_ptr< IntVec > Ax_b_eq, const shared_ptr< IntVec > x, HeurResult& res, IntegerType& bestObj);
-	void randomSelectMoveFromTopk(shared_ptr< IntVec > Ax_b_ineq,
-		shared_ptr< IntVec > Ax_b_eq,
-		shared_ptr< IntVec > x,
+	void testFeasAndUpdateBest(const shared_ptr< IntVec >& Ax_b_ineq,
+		const shared_ptr< IntVec >& Ax_b_eq,
+		const shared_ptr< IntVec >& x,
+		HeurResult& res,
+		IntegerType& bestObj);
+	void randomSelectMoveFromTopk(shared_ptr< IntVec >& Ax_b_ineq,
+		shared_ptr< IntVec >& Ax_b_eq,
+		shared_ptr< IntVec >& x,
 		IntegerType& score_x,
 		IntegerType& best_score,
 		IntegerType& best_score_j,

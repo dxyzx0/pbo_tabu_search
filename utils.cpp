@@ -6,6 +6,7 @@
 #include <memory>
 #include <ranges>
 #include <random>
+#include <cassert>
 #include "utils.h"
 
 bool isFeasible(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq)
