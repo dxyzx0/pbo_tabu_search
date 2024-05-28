@@ -2,6 +2,7 @@
 // Created by psw on 5/28/24.
 //
 
+#include <iostream>
 #include <memory>
 #include <ranges>
 #include <random>
@@ -51,6 +52,22 @@ IntegerType rInf(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq)
 	return infeasibility;
 }
 
+IntegerType normedRInf(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, const IntVec& Ax_ineq, const IntVec& Ax_eq)
+{
+	assert(Ax_b_ineq.size() == Ax_ineq.size());
+	assert(Ax_b_eq.size() == Ax_eq.size());
+	IntegerType infeasibility = 0;
+	for (size_t i = 0; i < Ax_b_ineq.size(); i++)
+	{
+		infeasibility += Ax_b_ineq[i] < 0 && Ax_ineq[i] != 0 ? abs(Ax_b_ineq[i] / Ax_ineq[i]) : IntegerType(0);
+	}
+	for (size_t i = 0; i < Ax_b_eq.size(); i++)
+	{
+		infeasibility += Ax_eq[i] != 0 ? abs(Ax_b_eq[i] / Ax_eq[i]) : IntegerType(0);
+	}
+	return infeasibility;
+}
+
 std::shared_ptr< IntVec > gen_rnd_vec(long nVar, long nNonZero, std::shared_ptr< IntVec > x)
 {
 	// This function filps nNonZero random elements of a binary vector of size nVar
@@ -94,3 +111,42 @@ std::shared_ptr< IntSpVec > gen_rnd_spvec(long nVar, long nNonZero)
 
 	return spVec;
 }
+
+std::shared_ptr< IntVec > str2vec(const std::string& str) {
+	std::stringstream ss(str);
+	std::vector< IntegerType > vec;
+	int num;
+
+	int i = 0;
+	while (ss >> num) {
+		std::cout << "num = " << num << std::endl;
+		vec.emplace_back(num);
+		i++;
+	}
+	std::shared_ptr< IntVec > x = std::make_shared< IntVec >(vec.size());
+	std::copy(vec.begin(), vec.end(), x->begin());
+	return x;
+}
+
+bool test_isFeasible(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, const IntVec& Ax_b_ineq_expected, const IntVec& Ax_b_eq_expected)
+{
+	bool isFeasible = true;
+	for (int i = 0; i < Ax_b_ineq.size(); i++)
+	{
+		if (Ax_b_ineq[i] != Ax_b_ineq_expected[i])
+		{
+			std::cout << "Ax_b_ineq[" << i << "] = " << Ax_b_ineq[i] << " != " << Ax_b_ineq_expected[i] << std::endl;
+			isFeasible = false;
+		}
+	}
+	for (int i = 0; i < Ax_b_eq.size(); i++)
+	{
+		if (Ax_b_eq[i] != Ax_b_eq_expected[i])
+		{
+			std::cout << "Ax_b_eq[" << i << "] = " << Ax_b_eq[i] << " != " << Ax_b_eq_expected[i] << std::endl;
+			isFeasible = false;
+		}
+	}
+	return isFeasible;
+}
+
