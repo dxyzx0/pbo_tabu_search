@@ -113,7 +113,7 @@ Problem::Problem(AbcCallback& abcCallback)
 //	spdlog::info("Updated A_eq, A_ineq");
 
 	size_t c_size = abcCallback.getC().size();
-	for (auto i = 0; i < c_size; i++)
+	for (size_t i = 0; i < c_size; i++)
 	{
 		auto [idVar, coeff] = abcCallback.getC()[i];
 		c->insert(idVar) = coeff;

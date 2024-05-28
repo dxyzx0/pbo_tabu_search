@@ -22,6 +22,7 @@ protected:
 	int infMeasure = 1; // 0: nInf, 1: rInf
 	long topkmin = 10;
 	long topkdiv = 100;
+	bool randomStart = false;
 public:
     HeuristicsTabuSearch(shared_ptr<Problem> prob, shared_ptr<Settings> settings);
     HeurResult heuristic() override;
