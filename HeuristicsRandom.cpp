@@ -2,10 +2,12 @@
 // Created by psw on 5/20/24.
 //
 
-#include <random>
-#include "HeuristicsRandom.h"
+
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include "HeuristicsRandom.h"
+#include "utils.h"
+
 /***********************************************************************************************************************
  * HeuristicsRandom
  **********************************************************************************************************************/
@@ -67,48 +69,3 @@ HeuristicsRandom::HeuristicsRandom(shared_ptr< Problem > prob, shared_ptr< Setti
 	prob), std::move(settings))
 {
 }
-
-shared_ptr< IntVec > HeuristicsRandom::gen_rnd_vec(long nVar, long nNonZero, shared_ptr< IntVec > x)
-{
-	// This function filps nNonZero random elements of a binary vector of size nVar
-	// If x is nullptr, a new zero vector is created, then it is filled with nNonZero random ones
-	// If x is not nullptr, nNonZeros variables are flipped
-	const long N = nVar;    // Total number of elements in the SparseVector
-	const long numOnes = nNonZero; // Number of ones to insert
-
-	if (x == nullptr)
-	{
-		x = make_shared< IntVec >(N);
-	}
-	else
-	{
-		assert(x->size() == N);
-	}
-
-	// Create a vector to hold indices from 0 to N-1
-	std::vector< int > indices(N);
-	std::iota(indices.begin(), indices.end(), 0);
-
-	// Create a random number generator
-	std::random_device rd;
-	std::mt19937 g(rd());
-
-	// Shuffle the indices
-	std::shuffle(indices.begin(), indices.end(), g);
-
-	// get an array with indices filled with 1
-	for (int i = 0; i < numOnes; ++i)
-	{
-		(*x)[indices[i]] = 1 - (*x)[indices[i]];
-	}
-	return x;
-}
-
-shared_ptr< IntSpVec > HeuristicsRandom::gen_rnd_spvec(long nVar, long nNonZero)
-{
-	auto vec = HeuristicsRandom::gen_rnd_vec(nVar, nNonZero);
-	auto spVec = make_shared< IntSpVec >(vec->sparseView());
-
-	return spVec;
-}
-

@@ -2,10 +2,11 @@
 // Created by psw on 5/21/24.
 //
 
-#include "HeuristicsTabuSearch.h"
 #include <ranges>
 #include <spdlog/spdlog.h>
 #include <queue>
+#include "HeuristicsTabuSearch.h"
+#include "utils.h"
 
 HeurResult HeuristicsTabuSearch::heuristic()
 {
@@ -20,7 +21,7 @@ HeurResult HeuristicsTabuSearch::heuristic()
 		shared_ptr< IntVec > x = randomStart ? gen_rnd_vec(nVar, nVar / 2) : make_shared< IntVec >(nVar);
 
 		auto [Ax_b_ineq, Ax_b_eq] = calAxb(*x);
-		IntegerType score_x = score(*Ax_b_ineq, *Ax_b_eq);
+		IntegerType score_x = score(*x, *Ax_b_ineq, *Ax_b_eq);
 
 		IntegerType best_score = score_x;
 		shared_ptr< IntVec > best_x = x;
@@ -72,7 +73,7 @@ HeurResult HeuristicsTabuSearch::heuristic()
 
 			for (long k = 0; k < nVar; k++)
 			{
-				auto [score_k, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(k, *x, *Ax_b_ineq, *Ax_b_eq);
+				auto [score_k, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(*x, *Ax_b_ineq, *Ax_b_eq, k);
 				if ((score_k > best_score_j && tabuList[k] <= j) || (score_k > best_score))
 				{  // greedy
 					// Add the score and index to the priority queue
@@ -93,7 +94,7 @@ HeurResult HeuristicsTabuSearch::heuristic()
 				best_k = k;
 				if (rand_k == 0)
 				{
-					auto [score_k_test, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(k, *x, *Ax_b_ineq, *Ax_b_eq);
+					auto [score_k_test, Ax_b_ineq_k, Ax_b_eq_k] = score_with_info(*x, *Ax_b_ineq, *Ax_b_eq, k);
 					Ax_b_ineq = Ax_b_ineq_k;
 					Ax_b_eq = Ax_b_eq_k;
 					assert(score_k == score_k_test);
@@ -126,7 +127,7 @@ HeurResult HeuristicsTabuSearch::heuristic()
 					nFilp);
 				x = gen_rnd_vec(nVar, nFilp, x);
 				auto [Ax_b_ineq, Ax_b_eq] = calAxb(*x);
-				score_x = score(*Ax_b_ineq, *Ax_b_eq);
+				score_x = score(*x, *Ax_b_ineq, *Ax_b_eq);
 				spdlog::info("(**) Randomly filped x with score = {}", score_x.get_str());
 			}
 
@@ -150,81 +151,57 @@ tuple< shared_ptr< IntVec >, shared_ptr< IntVec > > HeuristicsTabuSearch::calAxb
 	return make_tuple(Ax_b_ineq, Ax_b_eq);
 }
 
-bool HeuristicsTabuSearch::isFeasible(IntVec& Ax_b_ineq, IntVec& Ax_b_eq)
-{
-	// test if Ax_b_ineq >= 0 and Ax_b_eq == 0
-	if (!ranges::all_of(Ax_b_ineq, [](const IntegerType& i)
-	{ return i >= 0; }))
-	{
-		return false;
-	}
-	if (!ranges::all_of(Ax_b_eq, [](const IntegerType& i)
-	{ return i == 0; }))
-	{
-		return false;
-	}
-	return true;
-}
-
-IntegerType HeuristicsTabuSearch::nInf(IntVec& Ax_b_ineq, IntVec& Ax_b_eq)
-{
-	IntegerType infeasibility = 0;
-	for (const IntegerType& i : Ax_b_ineq)
-	{
-		infeasibility += i < 0 ? 1 : 0;
-	}
-	for (const IntegerType& i : Ax_b_eq)
-	{
-		infeasibility += i != 0 ? 1 : 0;
-	}
-	return infeasibility;
-}
-
-IntegerType HeuristicsTabuSearch::rInf(IntVec& Ax_b_ineq, IntVec& Ax_b_eq)
-{
-	IntegerType infeasibility = 0;
-	for (const IntegerType& i : Ax_b_ineq)
-	{
-		infeasibility += i < 0 ? -i : IntegerType(0);
-	}
-	for (const IntegerType& i : Ax_b_eq)
-	{
-		infeasibility += i > 0 ? i : -i;
-	}
-	return infeasibility;
-}
-
-IntegerType HeuristicsTabuSearch::score(long& i, IntVec& x, IntVec& Ax_b_ineq, IntVec& Ax_b_eq)
+IntegerType HeuristicsTabuSearch::score(const IntVec& x, const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, long& i)
 {
 	auto col_ineq_i = prob->getA_ineq()->col(i) * (1 - 2 * (x[i] == 1));
 	auto col_eq_i = prob->getA_eq()->col(i) * (1 - 2 * (x[i] == 1));
 	auto Ax_b_ineq_i = (Ax_b_ineq + col_ineq_i).toDense();
 	auto Ax_b_eq_i = (Ax_b_eq + col_eq_i).toDense();
-	if (infMeasure == 0)
+	if (infMeasure == InfMeasure::nInf)
 		return -nInf(Ax_b_ineq_i, Ax_b_eq_i);
-	else if (infMeasure == 1)
+	else if (infMeasure == InfMeasure::rInf)
 		return -rInf(Ax_b_ineq_i, Ax_b_eq_i);
+	else if (infMeasure == InfMeasure::objNInf)
+	{
+		IntegerType obj = prob->getObj(x);
+		return -nInf(Ax_b_ineq_i, Ax_b_eq_i) + w_num * obj / w_den;
+	}
+	else if (infMeasure == InfMeasure::objRInf)
+	{
+		IntegerType obj = prob->getObj(x);
+		return -rInf(Ax_b_ineq_i, Ax_b_eq_i) + w_num * obj / w_den;
+	}
 	else
 		throw std::runtime_error("Invalid infMeasure");
 }
 
 tuple< IntegerType, shared_ptr< IntVec >, shared_ptr< IntVec > >
-HeuristicsTabuSearch::score_with_info(long& i, IntVec& x, IntVec& Ax_b_ineq, IntVec& Ax_b_eq)
+HeuristicsTabuSearch::score_with_info(const IntVec& x, const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, long& i)
 {
 	auto col_ineq_i = prob->getA_ineq()->col(i) * (1 - 2 * (x[i] == 1));
 	auto col_eq_i = prob->getA_eq()->col(i) * (1 - 2 * (x[i] == 1));
-	IntegerType score_i = score(i, x, Ax_b_ineq, Ax_b_eq);
+	IntegerType score_i = score(x, Ax_b_ineq, Ax_b_eq, i);
 	auto Ax_b_ineq_i = make_shared< IntVec >(std::move((Ax_b_ineq + col_ineq_i).toDense()));
 	auto Ax_b_eq_i = make_shared< IntVec >(std::move((Ax_b_eq + col_eq_i).toDense()));
 	return make_tuple(score_i, Ax_b_ineq_i, Ax_b_eq_i);
 }
 
-IntegerType HeuristicsTabuSearch::score(IntVec& Ax_b_ineq, IntVec& Ax_b_eq)
+IntegerType HeuristicsTabuSearch::score(const IntVec& x, const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq) const
 {
-	if (infMeasure == 0)
+	if (infMeasure == InfMeasure::nInf)
 		return -nInf(Ax_b_ineq, Ax_b_eq);
-	else if (infMeasure == 1)
+	else if (infMeasure == InfMeasure::rInf)
 		return -rInf(Ax_b_ineq, Ax_b_eq);
+	else if (infMeasure == InfMeasure::objNInf)
+	{
+		IntegerType obj = prob->getObj(x);
+		return -nInf(Ax_b_ineq, Ax_b_eq) + w_num * obj / w_den;
+	}
+	else if (infMeasure == InfMeasure::objRInf)
+	{
+		IntegerType obj = prob->getObj(x);
+		return -rInf(Ax_b_ineq, Ax_b_eq) + w_num * obj / w_den;
+	}
 	else
 		throw std::runtime_error("Invalid infMeasure");
 }

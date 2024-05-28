@@ -7,13 +7,13 @@
 
 #include "Presolver.h"
 #include "type.h"
-class PresolverNaive: public Presolver
+class PresolverNaive : public Presolver
 {
  private:
 	vector< IntSpVec > A_eq_red;
 	vector< IntSpVec > A_ineq_red;
-public:
-	PresolverNaive( shared_ptr< Problem > prob, shared_ptr< Settings > settings );
+ public:
+	PresolverNaive(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	~PresolverNaive();
 	PresResult presolve() override;
 	void postsolve() override;

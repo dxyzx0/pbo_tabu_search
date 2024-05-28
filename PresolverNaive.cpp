@@ -19,6 +19,7 @@ PresolverNaive::~PresolverNaive()
 {
 
 }
+
 PresResult PresolverNaive::presolve()
 {
 	vector< long > red_cons_ineq, red_cons_eq;
@@ -182,6 +183,7 @@ PresResult PresolverNaive::presolve()
 	}
 
 }
+
 void PresolverNaive::postsolve()
 {
 

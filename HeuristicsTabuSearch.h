@@ -11,35 +11,38 @@
 
 using namespace std;
 
-class HeuristicsTabuSearch : public HeuristicsRandom {
-protected:
-    long nTabuListMax = 10;
-    long nTabuTenure = 10;
-    long nTabuIterMax = 10000;
-    unordered_map<long, size_t> tabuList;  // key: hash of move, value: the iteration when the move is allowed
-    IntegerType w_den = 0;
-    IntegerType w_num = 1;
-	int infMeasure = 1; // 0: nInf, 1: rInf
+enum class InfMeasure
+{
+	nInf,
+	rInf,
+	objNInf,
+	objRInf,
+};
+
+class HeuristicsTabuSearch : public HeuristicsRandom
+{
+ protected:
+	long nTabuListMax = 10;
+	long nTabuTenure = 10;
+	long nTabuIterMax = 10000;
+	unordered_map< long, size_t > tabuList;  // key: hash of move, value: the iteration when the move is allowed
+	IntegerType w_num = 0;  // score = Inf + w_num / w_den * obj
+	IntegerType w_den = 1;
+	InfMeasure infMeasure = InfMeasure::objRInf; // 0: nInf, 1: rInf, 2: objRInf
 	long topkmin = 10;
 	long topkdiv = 100;
 	bool randomStart = false;
-public:
-    HeuristicsTabuSearch(shared_ptr<Problem> prob, shared_ptr<Settings> settings);
-    HeurResult heuristic() override;
+ public:
+	HeuristicsTabuSearch(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
+	HeurResult heuristic() override;
 
-    tuple<shared_ptr<IntVec>, shared_ptr<IntVec> > calAxb(IntVec &x);
+	tuple< shared_ptr< IntVec >, shared_ptr< IntVec > > calAxb(IntVec& x);
 
-    bool isFeasible(IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
+	IntegerType score(const IntVec& x, const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq) const;
+	IntegerType score(const IntVec& x, const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, long& i);
+	tuple< IntegerType, shared_ptr< IntVec >, shared_ptr< IntVec > >
+	score_with_info(const IntVec& x, const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, long& i);
 
-    IntegerType nInf(IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
-	IntegerType rInf(IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
-
-    IntegerType score(long &i, IntVec &x, IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
-
-    tuple<IntegerType, shared_ptr<IntVec>, shared_ptr<IntVec> >
-    score_with_info(long &i, IntVec &x, IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
-
-    IntegerType score(IntVec &Ax_b_ineq, IntVec &Ax_b_eq);
 };
 
 #endif //PBO_HEURISTICS__HEURISTICSTABUSEARCH_H_

@@ -31,6 +31,8 @@ if (useEigen)
             parser/AbcCallback.cpp
             parser/AbcCallback.h
             type.h
+            utils.cpp
+            utils.h
             Messenger.cpp
             Messenger.h
             Problem.cpp
