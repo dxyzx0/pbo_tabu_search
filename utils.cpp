@@ -151,3 +151,10 @@ bool test_isFeasible(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, const IntVe
 	return isFeasible;
 }
 
+#ifdef useGMP
+std::string to_string(const mpz_class& x)
+{
+	return x.get_str();
+}
+#endif
+

@@ -12,7 +12,6 @@
 #include <vector>
 #include <cassert>
 #include "SimpleParser.h"
-#include "DefaultCallback.h"
 #include "AbcCallback.h"
 using namespace std;
 

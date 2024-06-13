@@ -11,16 +11,16 @@
 
 typedef mpz_class IntegerType;
 
-#define PBOINTMAX 2e50 // FIXME: numeric_limits< mpz_class >::max() has bug
-#define PBOINTMIN -2e50 // FIXME: numeric_limits< mpz_class >::min() has bug
+const IntegerType PBOINTMAX = 2e60;
+const IntegerType PBOINTMIN = -PBOINTMAX; // FIXME: numeric_limits< mpz_class >::min() has bug
 
 #else
-
-#warning this IntegerType may not be suitable for some input file. Consider using GMP
+//#warning this IntegerType may not be suitable for some input file. Consider using GMP
+#include <limits>
 typedef long IntegerType;
 
-#define PBOINTMAX numeric_limits< IntegerType >::max()
-#define PBOINTMIN numeric_limits< IntegerType >::min()
+const IntegerType PBOINTMAX = std::numeric_limits< IntegerType >::max();
+const IntegerType PBOINTMIN = std::numeric_limits< IntegerType >::min();
 
 #endif
 

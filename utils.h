@@ -6,6 +6,7 @@
 #define PBO_HEURISTICS__UTILS_H_
 
 #include <memory>
+#include <string>
 #include "type.h"
 
 bool isFeasible(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq);
@@ -25,9 +26,7 @@ std::shared_ptr< IntVec > str2vec(const std::string& str);
 bool test_isFeasible(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, const IntVec& Ax_b_ineq_expected, const IntVec& Ax_b_eq_expected);
 
 #ifdef useGMP
-string to_string(const mpz_class& x) {
-	return x.get_str();
-}
+std::string to_string(const mpz_class& x);
 #endif
 
 #endif //PBO_HEURISTICS__UTILS_H_
