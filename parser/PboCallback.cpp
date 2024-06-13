@@ -2,33 +2,33 @@
 // Created by psw on 5/19/24.
 //
 
-#include "AbcCallback.h"
 #include <iostream>
 #include <cassert>
+#include "PboCallback.h"
 
 using namespace std;
 
-void AbcCallback::objectiveTerm(IntegerType coeff, int idVar)
+void PboCallback::objectiveTerm(IntegerType coeff, int idVar)
 {
 	DefaultCallback::objectiveTerm(coeff, idVar);
 	c.emplace_back(idVar - 1, coeff);
 }
 
-void AbcCallback::metaData(int nbvar, int nbconstr)
+void PboCallback::metaData(int nbvar, int nbconstr)
 {
 	DefaultCallback::metaData(nbvar, nbconstr);
 	nVar = nbvar;
 	nCons = nbconstr;
 }
 
-void AbcCallback::constraintTerm(IntegerType coeff, int idVar)
+void PboCallback::constraintTerm(IntegerType coeff, int idVar)
 {
 	DefaultCallback::constraintTerm(coeff, idVar);
 	A.emplace_back(iCons, idVar - 1, coeff);  // idVar is 1-based, so we need to subtract 1
 	tmp_trip.emplace_back(idVar - 1, coeff);
 }
 
-void AbcCallback::endConstraint()
+void PboCallback::endConstraint()
 {
 	DefaultCallback::endConstraint();
 
@@ -68,62 +68,62 @@ void AbcCallback::endConstraint()
 
 }
 
-void AbcCallback::constraintRelOp(std::string relop)
+void PboCallback::constraintRelOp(std::string relop)
 {
 	DefaultCallback::constraintRelOp(relop);
 	relOp.emplace_back(iCons, relop);
 	iRelOp = relop;
 }
 
-void AbcCallback::constraintRightTerm(IntegerType val)
+void PboCallback::constraintRightTerm(IntegerType val)
 {
 	DefaultCallback::constraintRightTerm(val);
 	b.emplace_back(iCons, val);
 }
 
-void AbcCallback::linearizeProduct(int newSymbol, std::vector< int > product)
+void PboCallback::linearizeProduct(int newSymbol, std::vector< int > product)
 {
 	DefaultCallback::linearizeProduct(newSymbol, product);
 	throw std::runtime_error("Not implemented");
 }
 
-const std::vector< std::tuple< long, long, IntegerType > >& AbcCallback::getA()
+const std::vector< std::tuple< long, long, IntegerType > >& PboCallback::getA()
 {
 	return A;
 }
 
-const std::vector< Eigen::Triplet < IntegerType > >& AbcCallback::getA_eq()
+const std::vector< Eigen::Triplet < IntegerType > >& PboCallback::getA_eq()
 {
 	return A_eq_trip;
 }
 
-const std::vector< Eigen::Triplet < IntegerType > >& AbcCallback::getA_ineq()
+const std::vector< Eigen::Triplet < IntegerType > >& PboCallback::getA_ineq()
 {
 	return A_ineq_trip;
 }
 
 
-const std::vector< std::tuple< long, string > >& AbcCallback::getRelOp()
+const std::vector< std::tuple< long, string > >& PboCallback::getRelOp()
 {
 	return relOp;
 }
 
-const std::vector< std::tuple< long, IntegerType > >& AbcCallback::getB()
+const std::vector< std::tuple< long, IntegerType > >& PboCallback::getB()
 {
 	return b;
 }
 
-const std::vector< std::tuple< long, IntegerType > >& AbcCallback::getB_eq()
+const std::vector< std::tuple< long, IntegerType > >& PboCallback::getB_eq()
 {
 	return b_eq;
 }
 
-const std::vector< std::tuple< long, IntegerType > >& AbcCallback::getB_ineq()
+const std::vector< std::tuple< long, IntegerType > >& PboCallback::getB_ineq()
 {
 	return b_ineq;
 }
 
-const std::vector< std::tuple< long, IntegerType > >& AbcCallback::getC()
+const std::vector< std::tuple< long, IntegerType > >& PboCallback::getC()
 {
 	return c;
 }

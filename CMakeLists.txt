@@ -9,8 +9,8 @@ add_executable(parser parser/SimpleParser.cc
         parser/SimpleParser.h
         parser/DefaultCallback.cpp
         parser/DefaultCallback.h
-        parser/AbcCallback.cpp
-        parser/AbcCallback.h)
+        parser/PboCallback.cpp
+        parser/PboCallback.h)
 target_link_libraries(parser gmp gmpxx)
 target_compile_definitions(parser PRIVATE useGMP)
 
@@ -35,34 +35,19 @@ endif ()
 find_package(spdlog CONFIG REQUIRED)
 add_executable(pbo_heur_eigen
         main.cpp
-        parser/SimpleParser.h
         parser/DefaultCallback.cpp
-        parser/DefaultCallback.h
-        parser/AbcCallback.cpp
-        parser/AbcCallback.h
-        type.h
+        parser/PboCallback.cpp
         utils.cpp
-        utils.h
         Messenger.cpp
-        Messenger.h
         Problem.cpp
-        Problem.h
         Settings.cpp
-        Settings.h
         Solver.cpp
-        Solver.h
         Presolver.cpp
-        Presolver.h
         Propgators.cpp
-        Propgators.h
         Heuristics.cpp
-        Heuristics.h
         PresolverNaive.cpp
-        PresolverNaive.h
         HeuristicsRandom.cpp
-        HeuristicsRandom.h
         HeuristicsTabuSearch.cpp
-        HeuristicsTabuSearch.h
 )
 target_link_libraries(pbo_heur_eigen ${LIBRARYS} spdlog::spdlog)
 target_compile_definitions(pbo_heur_eigen PRIVATE ${COMPILE_DEFS})

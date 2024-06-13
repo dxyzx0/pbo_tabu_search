@@ -43,9 +43,9 @@ HeurResult HeuristicsTabuSearch::heuristic()
 	shared_ptr< IntVec > bestSol = set->bestSol;
 	HeurResult res = HeurResult::HEUR_NOTFIND;
 	std::vector< std::thread > threads; // Vector to hold the threads
-	threads.reserve(nThreads);
+	threads.reserve(set->numthreads);
 
-	for (size_t i = 0; i < nThreads; i++)
+	for (size_t i = 0; i < set->numthreads; i++)
 	{
 		threads.emplace_back([&, i]()
 		{ // Capture variables by reference and i by value
@@ -70,6 +70,15 @@ HeurResult HeuristicsTabuSearch::heuristic()
 		  spdlog::info("(*) Initial score = {}", to_string(score_x));
 		  for (long j = 0; j < nTabuIterMax; j++)
 		  {
+			  // break if time limit is reached
+			  double time = std::chrono::duration_cast< std::chrono::milliseconds >(
+				  std::chrono::steady_clock::now() - set->startTime).count() / 1000.0;
+			  if (time > set->timelimit)
+			  {
+				  spdlog::info("(*) Tabu search time limit reached");
+				  break;
+			  }
+
 			  spdlog::info("(**) Tabu search iteration {}, score = {}, best score = {}",
 				  j, to_string(score_x), to_string(best_score));
 
@@ -107,6 +116,15 @@ HeurResult HeuristicsTabuSearch::heuristic()
 	for (auto& thread : threads)
 	{
 		thread.join();
+	}
+
+	if (res == HeurResult::HEUR_FINDBESTSOL)
+	{
+		spdlog::info("(*) Tabu search found a feasible solution with obj = {}", to_string(bestObj));
+	}
+	else
+	{
+		spdlog::info("(*) Tabu search did not find feasible solution.");
 	}
 
 	return res;
@@ -217,7 +235,6 @@ HeuristicsTabuSearch::HeuristicsTabuSearch(shared_ptr< Problem > prob, shared_pt
 	: HeuristicsRandom(prob, settings)
 {
 	initTabuList();
-	nThreads = std::thread::hardware_concurrency();
 }
 
 void HeuristicsTabuSearch::testFeasAndUpdateBest(const shared_ptr< IntVec >& Ax_b_ineq,

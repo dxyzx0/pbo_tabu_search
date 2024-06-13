@@ -9,7 +9,7 @@
 
 using namespace std;
 
-Problem::Problem(AbcCallback& abcCallback)
+Problem::Problem(PboCallback& abcCallback)
 {
 	cout << "Start to initialize Problem" << endl;
 	nVar = abcCallback.getNVar();

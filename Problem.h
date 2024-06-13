@@ -7,7 +7,7 @@
 
 #include <memory>
 #include "type.h"
-#include "parser/AbcCallback.h"
+#include "parser/PboCallback.h"
 
 using namespace std;
 
@@ -38,7 +38,7 @@ class Problem
 	long nnz_A_eq;
 	long nnz_A_ineq;
  public:
-	explicit Problem(AbcCallback& abcCallback);
+	explicit Problem(PboCallback& abcCallback);
 	shared_ptr< IntSpMat > getA_eq()
 	{
 		return A_eq;

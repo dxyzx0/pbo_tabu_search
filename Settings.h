@@ -6,6 +6,7 @@
 #define PBO_HEURISTICS__SETTINGS_H_
 
 #include <memory>
+#include <chrono>
 #include "type.h"
 #include "Messenger.h"
 
@@ -20,6 +21,11 @@ class Settings
 	// solution related
 	IntegerType bestObj = PBOINTMAX;
 	shared_ptr< IntVec > bestSol = nullptr;
+
+	std::chrono::steady_clock::time_point startTime;
+	double timelimit = 3600;
+	int numthreads = 1;
+	int verbose = 0;
 
 	// limits related
 	long maxIter = 10;

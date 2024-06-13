@@ -61,10 +61,6 @@ class HeuristicsTabuSearch : public HeuristicsRandom
 
 	// mutex for
 	std::mutex mtx;
-
-	// number of threads
-	size_t nThreads;
-
  public:
 	HeuristicsTabuSearch(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	HeurResult heuristic() override;

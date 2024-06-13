@@ -35,6 +35,7 @@ class Solver
 	SolveResult solve();
 	void initSolver();
 	PresResult presolve();
+	shared_ptr< Settings > getSettings();
 };
 
 #endif //PBO_HEURISTICS__SOLVER_H_

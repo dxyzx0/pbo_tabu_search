@@ -12,7 +12,7 @@
 #include <vector>
 #include <cassert>
 #include "SimpleParser.h"
-#include "AbcCallback.h"
+#include "PboCallback.h"
 using namespace std;
 
 /**
@@ -544,7 +544,7 @@ class SimpleParser
 	/**
 	 * constructor which only opens the file
 	 */
-	SimpleParser(char* filename)
+	explicit SimpleParser(const char* filename)
 	{
 		in.open(filename, ios_base::in);
 

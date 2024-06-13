@@ -58,6 +58,7 @@ SolveResult Solver::solve()
 			if (heurResult == HeurResult::HEUR_FINDBESTSOL)
 			{
 				nBestSol++;
+				result = SolveResult::SOLVE_FEASIBLE;
 			}
 		}
 	}
@@ -98,5 +99,10 @@ PresResult Solver::presolve()
 		}
 	}
 	return presResult;
+}
+
+shared_ptr< Settings > Solver::getSettings()
+{
+	return set;
 }
 

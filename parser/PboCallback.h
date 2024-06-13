@@ -14,15 +14,15 @@
 
 using namespace std;
 
-class AbcCallback : public DefaultCallback
+class PboCallback : public DefaultCallback
 {
  private:
 	vector< tuple< long, long, IntegerType > > A;
 	vector< Eigen::Triplet< IntegerType > > A_eq_trip, A_ineq_trip;
-	vector< tuple< long, string>> relOp;
+	vector< tuple< long, string > > relOp;
 	vector< tuple< long, IntegerType > > b;
 	vector< tuple< long, IntegerType > > b_eq, b_ineq;
-	vector< tuple< long, IntegerType>> c;
+	vector< tuple< long, IntegerType > > c;
 	long nVar;
 	long nCons;
 	long iCons;
