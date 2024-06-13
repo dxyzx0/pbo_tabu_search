@@ -69,7 +69,7 @@ IntegerType normedRInf(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, const Int
 	return infeasibility;
 }
 
-std::shared_ptr< IntVec > gen_rnd_vec(long nVar, long nNonZero, std::shared_ptr< IntVec > x)
+std::shared_ptr< IntVec > gen_rnd_vec(long nVar, long nNonZero, std::shared_ptr< IntVec > x, size_t seed)
 {
 	// This function filps nNonZero random elements of a binary vector of size nVar
 	// If x is nullptr, a new zero vector is created, then it is filled with nNonZero random ones
@@ -107,7 +107,7 @@ std::shared_ptr< IntVec > gen_rnd_vec(long nVar, long nNonZero, std::shared_ptr<
 
 std::shared_ptr< IntSpVec > gen_rnd_spvec(long nVar, long nNonZero)
 {
-	auto vec = gen_rnd_vec(nVar, nNonZero, nullptr);
+	auto vec = gen_rnd_vec(nVar, nNonZero, nullptr, time(nullptr));
 	auto spVec = std::make_shared< IntSpVec >(vec->sparseView());
 
 	return spVec;

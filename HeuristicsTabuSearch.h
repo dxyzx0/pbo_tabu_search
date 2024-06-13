@@ -8,6 +8,7 @@
 #include "HeuristicsRandom.h"
 
 #include <algorithm>
+#include <mutex>
 
 using namespace std;
 
@@ -58,6 +59,12 @@ class HeuristicsTabuSearch : public HeuristicsRandom
 	int nSolFound = 0;
 	int nBestSolFound = 0;
 
+	// mutex for
+	std::mutex mtx;
+
+	// number of threads
+	size_t nThreads;
+
  public:
 	HeuristicsTabuSearch(shared_ptr< Problem > prob, shared_ptr< Settings > settings);
 	HeurResult heuristic() override;
@@ -89,7 +96,8 @@ class HeuristicsTabuSearch : public HeuristicsRandom
 		IntegerType& best_score_j,
 		long& nConsecutiveNonImproving,
 		long& best_k,
-		long& j);
+		long& j,
+		size_t seed);
 
 };
 
