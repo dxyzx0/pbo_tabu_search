@@ -34,7 +34,7 @@ class HeuristicsTabuSearch : public HeuristicsRandom
  protected:
 	// Tabu search parameters
 	long nTabuTenure = 10;
-	long nTabuIterMax = 10000;
+	long nTabuIterMax = 100000;
 	unordered_map< long, size_t > tabuList;  // key: hash of move, value: the iteration when the move is allowed
 
 	// random start or all zero start
