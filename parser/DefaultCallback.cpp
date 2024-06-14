@@ -2,13 +2,15 @@
 // Created by psw on 5/19/24.
 //
 
-#include "DefaultCallback.h"
 #include <iostream>
 #include <fstream>
 #include <iomanip>
 #include <stdexcept>
 #include <vector>
 #include <cassert>
+#include "DefaultCallback.h"
+#include "../utils.h"
+
 using namespace std;
 
 /**
@@ -26,8 +28,8 @@ using namespace std;
  */
 void DefaultCallback::metaData(int nbvar, int nbconstr)
 {
-	cout << "[nbvar=" << nbvar << "]" << endl;
-	cout << "[nbconstr=" << nbconstr << "]" << endl;
+	cout_com << "[nbvar=" << nbvar << "]" << endl;
+	cout_com << "[nbconstr=" << nbconstr << "]" << endl;
 }
 
 /**
@@ -35,7 +37,7 @@ void DefaultCallback::metaData(int nbvar, int nbconstr)
  */
 void DefaultCallback::beginObjective()
 {
-	cout << "objective:  ";
+	cout_com << "objective:  ";
 }
 
 /**
@@ -43,7 +45,7 @@ void DefaultCallback::beginObjective()
  */
 void DefaultCallback::endObjective()
 {
-	cout << endl;
+	cout_com << endl;
 }
 
 /**
@@ -54,7 +56,7 @@ void DefaultCallback::endObjective()
  */
 void DefaultCallback::objectiveTerm(IntegerType coeff, int idVar)
 {
-	cout << "[" << showpos << coeff << noshowpos << " x" << idVar << "] ";
+	cout_com << "[" << showpos << coeff << noshowpos << " x" << idVar << "] ";
 }
 
 /**
@@ -66,15 +68,15 @@ void DefaultCallback::objectiveTerm(IntegerType coeff, int idVar)
  */
 void DefaultCallback::objectiveProduct(IntegerType coeff, vector< int > list)
 {
-	cout << "[" << showpos << coeff << noshowpos << " ";
+	cout_com << "[" << showpos << coeff << noshowpos << " ";
 	for (int i = 0; i < list.size(); ++i)
 	{
 		if (list[i] < 0)
-			cout << "~x" << -list[i] << ' ';
+			cout_com << "~x" << -list[i] << ' ';
 		else
-			cout << "x" << list[i] << ' ';
+			cout_com << "x" << list[i] << ' ';
 	}
-	cout << "] ";
+	cout_com << "] ";
 }
 
 /**
@@ -82,7 +84,7 @@ void DefaultCallback::objectiveProduct(IntegerType coeff, vector< int > list)
  */
 void DefaultCallback::beginConstraint()
 {
-	cout << "constraint: ";
+	cout_com << "constraint: ";
 }
 
 /**
@@ -90,7 +92,7 @@ void DefaultCallback::beginConstraint()
  */
 void DefaultCallback::endConstraint()
 {
-	cout << endl;
+	cout_com << endl;
 }
 
 /**
@@ -101,7 +103,7 @@ void DefaultCallback::endConstraint()
  */
 void DefaultCallback::constraintTerm(IntegerType coeff, int idVar)
 {
-	cout << "[" << showpos << coeff << noshowpos << " x" << idVar << "] ";
+	cout_com << "[" << showpos << coeff << noshowpos << " x" << idVar << "] ";
 }
 
 /**
@@ -113,15 +115,15 @@ void DefaultCallback::constraintTerm(IntegerType coeff, int idVar)
  */
 void DefaultCallback::constraintProduct(IntegerType coeff, vector< int > list)
 {
-	cout << "[" << showpos << coeff << noshowpos << " ";
+	cout_com << "[" << showpos << coeff << noshowpos << " ";
 	for (int i = 0; i < list.size(); ++i)
 	{
 		if (list[i] < 0)
-			cout << "~x" << -list[i] << ' ';
+			cout_com << "~x" << -list[i] << ' ';
 		else
-			cout << "x" << list[i] << ' ';
+			cout_com << "x" << list[i] << ' ';
 	}
-	cout << "] ";
+	cout_com << "] ";
 }
 
 /**
@@ -131,7 +133,7 @@ void DefaultCallback::constraintProduct(IntegerType coeff, vector< int > list)
  */
 void DefaultCallback::constraintRelOp(string relop)
 {
-	cout << "[" << relop << "] ";
+	cout_com << "[" << relop << "] ";
 }
 
 /**
@@ -142,7 +144,7 @@ void DefaultCallback::constraintRelOp(string relop)
  */
 void DefaultCallback::constraintRightTerm(IntegerType val)
 {
-	cout << "[" << val << "]";
+	cout_com << "[" << val << "]";
 }
 
 /**

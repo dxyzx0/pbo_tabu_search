@@ -7,6 +7,7 @@
 #include <algorithm>
 #include "PresolverNaive.h"
 #include "type_result.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -46,7 +47,7 @@ PresResult PresolverNaive::presolve()
 			if (sum_red_row_i >= b_i)
 			{
 				red_cons_ineq.push_back(i);
-				cout << "Constraint " << i << " is redundant, because " << sum_red_row_i << " >= " << b_i << endl;
+				cout_com << "Constraint " << i << " is redundant, because " << sum_red_row_i << " >= " << b_i << endl;
 				A_ineq->row(i) *= 0;
 			}
 		}
@@ -59,7 +60,7 @@ PresResult PresolverNaive::presolve()
 		if (sum_inf_row_i < b_i)
 		{
 			inf_cons_ineq.push_back(i);
-			cout << "Constraint " << i << " is infeasible, because " << sum_inf_row_i << " < " << b_i << endl;
+			cout_com << "Constraint " << i << " is infeasible, because " << sum_inf_row_i << " < " << b_i << endl;
 			return PresResult::PRES_INFEASIBLE;
 		}
 	}
@@ -78,7 +79,7 @@ PresResult PresolverNaive::presolve()
 			if (sum_pos_row_i < b_i)
 			{
 				inf_cons_eq.push_back(i);
-				cout << "Constraint " << i << " is infeasible, because " << sum_pos_row_i << " < " << b_i << endl;
+				cout_com << "Constraint " << i << " is infeasible, because " << sum_pos_row_i << " < " << b_i << endl;
 				return PresResult::PRES_INFEASIBLE;
 			}
 		}
@@ -92,7 +93,7 @@ PresResult PresolverNaive::presolve()
 			if (sum_neg_row_i > b_i)
 			{
 				inf_cons_eq.push_back(i);
-				cout << "Constraint " << i << " is infeasible, because " << sum_neg_row_i << " > " << b_i << endl;
+				cout_com << "Constraint " << i << " is infeasible, because " << sum_neg_row_i << " > " << b_i << endl;
 				return PresResult::PRES_INFEASIBLE;
 			}
 		}
@@ -109,7 +110,7 @@ PresResult PresolverNaive::presolve()
 			}
 			if (red_flag)
 			{
-				cout << "Constraint " << i << " is redundant" << endl;
+				cout_com << "Constraint " << i << " is redundant" << endl;
 				red_cons_eq.push_back(i);
 				A_eq->row(i) *= 0;
 			}
@@ -120,7 +121,7 @@ PresResult PresolverNaive::presolve()
 //	long nConsIneq = A_ineq->outerSize() - red_cons_ineq.size();
 //	if (nConsIneq == 0)
 //	{
-//		cout << "All inequality constraints are redundant" << endl;
+//		cout_com << "All inequality constraints are redundant" << endl;
 //		A_ineq->setZero();
 //	}
 //	else
@@ -128,7 +129,7 @@ PresResult PresolverNaive::presolve()
 //		for (auto i : red_cons_ineq)
 //		{
 //			A_ineq->removeOuterVectors(i);
-//			cout << A_ineq->rows() << A_ineq->cols() << endl;
+//			cout_com << A_ineq->rows() << A_ineq->cols() << endl;
 //		}
 //	}
 //
@@ -136,7 +137,7 @@ PresResult PresolverNaive::presolve()
 //	long nConsEq = A_eq->outerSize() - red_cons_eq.size();
 //	if (nConsEq == 0)
 //	{
-//		cout << "All equality constraints are redundant" << endl;
+//		cout_com << "All equality constraints are redundant" << endl;
 //		A_eq->setZero();
 //	}
 //	else
@@ -144,7 +145,7 @@ PresResult PresolverNaive::presolve()
 //		for (auto i : red_cons_eq)
 //		{
 //			A_eq->removeOuterVectors(i);
-//			cout << A_eq->rows() << A_eq->cols() << endl;
+//			cout_com << A_eq->rows() << A_eq->cols() << endl;
 //		}
 //	}
 
@@ -152,17 +153,17 @@ PresResult PresolverNaive::presolve()
 	auto b_ineq = prob->getB_ineq();
 	for (auto iCons : red_cons_ineq)
 	{
-//		cout << (*b_ineq)[iCons] << endl;
+//		cout_com << (*b_ineq)[iCons] << endl;
 		b_ineq->coeffRef(iCons) = 0;
-//		cout << (*b_ineq)[iCons] << endl;
-//		cout << b_ineq->size() << endl;
+//		cout_com << (*b_ineq)[iCons] << endl;
+//		cout_com << b_ineq->size() << endl;
 	}
 	// remove redundant constraints in the right-hand side of the equality constraints
 	auto b_eq = prob->getB_eq();
 	for (auto iCons : red_cons_eq)
 	{
 		b_eq->coeffRef(iCons) = 0;
-//		cout << b_eq->size() << endl;
+//		cout_com << b_eq->size() << endl;
 	}
 	assert(A_ineq->rows() == b_ineq->size());
 	assert(A_eq->rows() == b_eq->size());
@@ -172,13 +173,13 @@ PresResult PresolverNaive::presolve()
 
 	if (!red_cons_ineq.empty() || !red_cons_eq.empty())
 	{
-		cout << "Reduced " << red_cons_ineq.size() << " inequality constraints and " << red_cons_eq.size()
-			 << " equality constraints" << endl;
+		cout_com << "Reduced " << red_cons_ineq.size() << " inequality constraints and " << red_cons_eq.size()
+				 << " equality constraints" << endl;
 		return PresResult::PRES_REDUCED;
 	}
 	else
 	{
-		cout << "No redundant constraints found" << endl;
+		cout_com << "No redundant constraints found" << endl;
 		return PresResult::PRES_UNCHANGED;
 	}
 

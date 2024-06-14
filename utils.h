@@ -9,6 +9,21 @@
 #include <string>
 #include "type.h"
 
+#define FJ_LOG_PREFIX "(FJ) "
+#define FJ_LOG_SOL_PREFIX "(FJSOL) "
+
+#define PBO_LOG_COMMENT_PREFIX "c "
+#define PBO_LOG_STATUS_PREFIX "s "
+#define PBO_LOG_OBJ_PREFIX "o "
+#define PBO_LOG_SOL_PREFIX "v "
+
+#define cout_com std::cout << PBO_LOG_COMMENT_PREFIX << FJ_LOG_PREFIX
+#define cout_stat std::cout << PBO_LOG_STATUS_PREFIX << FJ_LOG_PREFIX
+#define cout_obj std::cout << PBO_LOG_OBJ_PREFIX << FJ_LOG_PREFIX
+#define cout_sol std::cout << PBO_LOG_SOL_PREFIX << FJ_LOG_PREFIX
+
+#define cout_sol_com std::cout << PBO_LOG_COMMENT_PREFIX << FJ_LOG_SOL_PREFIX
+
 bool isFeasible(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq);
 
 IntegerType nInf(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq);

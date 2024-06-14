@@ -5,10 +5,12 @@
 #include <iostream>
 #include <cassert>
 #include <chrono>
+#include <spdlog/spdlog.h>
 #include "parser/SimpleParser.h"
 #include "parser/PboCallback.h"
 #include "Problem.h"
 #include "Solver.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -20,6 +22,7 @@ int printUsage()
 
 int main(int argc, char* argv[])
 {
+	spdlog::set_pattern(fmt::format("{}[%H:%M:%S %z] [%^%l%$] [thread %t] %v", PBO_LOG_COMMENT_PREFIX));
 
 	shared_ptr< Settings > set = make_shared< Settings >();
 
@@ -41,7 +44,10 @@ int main(int argc, char* argv[])
 			i++;
 		}
 		else if (argvi == "--verbose" || argvi == "-v")
+		{
 			set->verbose++;
+			spdlog::set_level(spdlog::level::debug);
+		}
 		else if (argvi == "--jobs" || argvi == "-j")
 		{
 			if (i + 1 < argc)
@@ -61,7 +67,7 @@ int main(int argc, char* argv[])
 	{
 		const string& filename = inputPath;
 		// assert filename ends with ".opb" or ".pb"
-		cout << "Parsing file: " << filename << endl;
+		cout_com << "Parsing file: " << filename << endl;
 		assert(filename.substr(filename.find_last_of('.') + 1) == "opb"
 			|| filename.substr(filename.find_last_of('.') + 1) == "pb");
 		parser = new SimpleParser< PboCallback >(filename.c_str());
@@ -81,16 +87,24 @@ int main(int argc, char* argv[])
 	Solver solver(make_shared< Problem >(parser->cb), set);
 	SolveResult result = solver.solve();
 
-	cout << "Result: " << result << endl;
+	cout_com << "Result: " << result << endl;
 	if (result == SolveResult::SOLVE_FEASIBLE || result == SolveResult::SOLVE_OPTIMAL)
 	{
-		cout << "Objective value: " << solver.getSettings()->bestObj << endl;
-		cout << "Solution: ";
-		for (const IntegerType& x : *solver.getSettings()->bestSol)
+		cout_stat << "SATISFIABLE" << endl;
+		cout_obj << solver.getSettings()->bestObj << endl;
+		cout_sol << "";
+		for (int i = 0; i < solver.getSettings()->bestSol->size(); i++)
 		{
-			cout << x << " ";
+			if ((*solver.getSettings()->bestSol)[i] == 1)
+				cout << "x" << i + 1 << " ";
+			else
+				cout << "-x" << i + 1 << " ";
 		}
 		cout << endl;
+	}
+	else
+	{
+		cout_stat << "UNSATISFIABLE" << endl;
 	}
 
 	return 0;

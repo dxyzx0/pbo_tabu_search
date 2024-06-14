@@ -2,16 +2,17 @@
 // Created by psw on 5/19/24.
 //
 
-#include "Problem.h"
 #include <cassert>
 #include <iostream>
 #include <spdlog/spdlog.h>
+#include "Problem.h"
+#include "utils.h"
 
 using namespace std;
 
 Problem::Problem(PboCallback& abcCallback)
 {
-	cout << "Start to initialize Problem" << endl;
+	cout_com << "Start to initialize Problem" << endl;
 	nVar = abcCallback.getNVar();
 	nCons = abcCallback.getNCons();
 	nConsEq = abcCallback.getNConsEq();
@@ -125,7 +126,7 @@ Problem::Problem(PboCallback& abcCallback)
 //	{
 //		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
 //		{
-//			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//			cout_com << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
 //		}
 //	}
 //	// print out elements in A_ineq
@@ -133,23 +134,23 @@ Problem::Problem(PboCallback& abcCallback)
 //	{
 //		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
 //		{
-//			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//			cout_com << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
 //		}
 //	}
 //	// print out elements in b_eq
 //	for (auto i = 0; i < b_eq->size(); i++)
 //	{
-//		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
+//		cout_com << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
 //	}
 //	// print out elements in b_ineq
 //	for (auto i = 0; i < b_ineq->size(); i++)
 //	{
-//		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
+//		cout_com << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
 //	}
 //	// print out elements in c
 //	for (auto i = 0; i < c->size(); i++)
 //	{
-//		cout << "c(" << i << ") = " << c->coeff(i) << endl;
+//		cout_com << "c(" << i << ") = " << c->coeff(i) << endl;
 //	}
 
 	assert(nConsEq + nConsIneq == nCons);
@@ -160,10 +161,10 @@ Problem::Problem(PboCallback& abcCallback)
 	c->finalize();
 
 	// summarize the problem
-	cout << "nVar = " << nVar << endl;
-	cout << "nCons = " << nCons << " (nConsEq = " << nConsEq << ", nConsIneq = " << nConsIneq << ")" << endl;
-	cout << "nnz = " << nnz << " (nnz_A_eq = " << nnz_A_eq << ", nnz_A_ineq = " << nnz_A_ineq << ")" << endl;
-	cout << "nnz_c = " << c->nonZeros() << endl;
+	cout_com << "nVar = " << nVar << endl;
+	cout_com << "nCons = " << nCons << " (nConsEq = " << nConsEq << ", nConsIneq = " << nConsIneq << ")" << endl;
+	cout_com << "nnz = " << nnz << " (nnz_A_eq = " << nnz_A_eq << ", nnz_A_ineq = " << nnz_A_ineq << ")" << endl;
+	cout_com << "nnz_c = " << c->nonZeros() << endl;
 
 }
 
@@ -211,53 +212,53 @@ bool Problem::isFeasible(const IntSpVec& x)
 {
 	// check if x is feasible
 	// check if A_eq * x = b_eq
-//	cout << "x = " << x << endl;
+//	cout_com << "x = " << x << endl;
 //	for (auto i = 0; i < x.size(); i++)
 //	{
-//		cout << "x(" << i << ") = " << x.coeff(i) << endl;
+//		cout_com << "x(" << i << ") = " << x.coeff(i) << endl;
 //	}
-//	cout << "A_eq = " << *A_eq << endl;
+//	cout_com << "A_eq = " << *A_eq << endl;
 //	for (auto i = 0; i < A_eq->outerSize(); i++)
 //	{
 //		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
 //		{
-//			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//			cout_com << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
 //		}
 //	}
-//	cout << "b_eq = " << *b_eq << endl;
+//	cout_com << "b_eq = " << *b_eq << endl;
 //	for (auto i = 0; i < b_eq->size(); i++)
 //	{
-//		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
+//		cout_com << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
 //	}
-//	cout << "A_ineq = " << *A_ineq << endl;
+//	cout_com << "A_ineq = " << *A_ineq << endl;
 //	for (auto i = 0; i < A_ineq->outerSize(); i++)
 //	{
 //		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
 //		{
-//			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//			cout_com << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
 //		}
 //	}
-//	cout << "b_ineq = " << *b_ineq << endl;
+//	cout_com << "b_ineq = " << *b_ineq << endl;
 //	for (auto i = 0; i < b_ineq->size(); i++)
 //	{
-//		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
+//		cout_com << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
 //	}
 
 	auto lhs_eq = (*A_eq) * x;
 	auto lhs_ineq = (*A_ineq) * x;
-//	cout << "lhs_eq = " << lhs_eq << endl;
-//	cout << "lhs_ineq = " << lhs_ineq << endl;
+//	cout_com << "lhs_eq = " << lhs_eq << endl;
+//	cout_com << "lhs_ineq = " << lhs_ineq << endl;
 
 	auto b_eq_sp = b_eq->sparseView();
 	auto b_ineq_sp = b_ineq->sparseView();
 	auto res_eq = lhs_eq.cwiseEqual(b_eq_sp).cast< long >();
 	auto res_ineq = lhs_ineq.cwiseMax(b_ineq_sp).cwiseEqual(lhs_ineq).cast< long >();
-//	cout << "res_eq = " << res_eq << endl;
-//	cout << "res_ineq = " << res_ineq << endl;
-//	cout << "res_eq.sum() = " << res_eq.sum() << endl;
-//	cout << "nConsEq = " << nConsEq << endl;
-//	cout << "res_ineq.sum() = " << res_ineq.sum() << endl;
-//	cout << "nConsIneq = " << nConsIneq << endl;
+//	cout_com << "res_eq = " << res_eq << endl;
+//	cout_com << "res_ineq = " << res_ineq << endl;
+//	cout_com << "res_eq.sum() = " << res_eq.sum() << endl;
+//	cout_com << "nConsEq = " << nConsEq << endl;
+//	cout_com << "res_ineq.sum() = " << res_ineq.sum() << endl;
+//	cout_com << "nConsIneq = " << nConsIneq << endl;
 
 	if (res_eq.sum() == nConsEq && res_ineq.sum() == nConsIneq)
 	{
@@ -273,51 +274,51 @@ bool Problem::isFeasible(const IntVec& x)
 {
 	// check if x is feasible
 	// check if A_eq * x = b_eq
-//	cout << "x = " << x << endl;
+//	cout_com << "x = " << x << endl;
 //	for (auto i = 0; i < x.size(); i++)
 //	{
-//		cout << "x(" << i << ") = " << x.coeff(i) << endl;
+//		cout_com << "x(" << i << ") = " << x.coeff(i) << endl;
 //	}
-//	cout << "A_eq = " << *A_eq << endl;
+//	cout_com << "A_eq = " << *A_eq << endl;
 //	for (auto i = 0; i < A_eq->outerSize(); i++)
 //	{
 //		for (IntSpMat::InnerIterator it(*A_eq, i); it; ++it)
 //		{
-//			cout << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//			cout_com << "A_eq(" << i << ", " << it.index() << ") = " << it.value() << endl;
 //		}
 //	}
-//	cout << "b_eq = " << *b_eq << endl;
+//	cout_com << "b_eq = " << *b_eq << endl;
 //	for (auto i = 0; i < b_eq->size(); i++)
 //	{
-//		cout << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
+//		cout_com << "b_eq(" << i << ") = " << b_eq->coeff(i) << endl;
 //	}
-//	cout << "A_ineq = " << *A_ineq << endl;
+//	cout_com << "A_ineq = " << *A_ineq << endl;
 //	for (auto i = 0; i < A_ineq->outerSize(); i++)
 //	{
 //		for (IntSpMat::InnerIterator it(*A_ineq, i); it; ++it)
 //		{
-//			cout << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
+//			cout_com << "A_ineq(" << i << ", " << it.index() << ") = " << it.value() << endl;
 //		}
 //	}
-//	cout << "b_ineq = " << *b_ineq << endl;
+//	cout_com << "b_ineq = " << *b_ineq << endl;
 //	for (auto i = 0; i < b_ineq->size(); i++)
 //	{
-//		cout << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
+//		cout_com << "b_ineq(" << i << ") = " << b_ineq->coeff(i) << endl;
 //	}
 
 	auto lhs_eq = (*A_eq) * x;
 	auto lhs_ineq = (*A_ineq) * x;
-//	cout << "lhs_eq = " << lhs_eq << endl;
-//	cout << "lhs_ineq = " << lhs_ineq << endl;
+//	cout_com << "lhs_eq = " << lhs_eq << endl;
+//	cout_com << "lhs_ineq = " << lhs_ineq << endl;
 
 	auto res_eq = lhs_eq.cwiseEqual(*b_eq).cast< long >();
 	auto res_ineq = lhs_ineq.cwiseMax(*b_ineq).cwiseEqual(lhs_ineq).cast< long >();
-//	cout << "res_eq = " << res_eq << endl;
-//	cout << "res_ineq = " << res_ineq << endl;
-//	cout << "res_eq.sum() = " << res_eq.sum() << endl;
-//	cout << "nConsEq = " << nConsEq << endl;
-//	cout << "res_ineq.sum() = " << res_ineq.sum() << endl;
-//	cout << "nConsIneq = " << nConsIneq << endl;
+//	cout_com << "res_eq = " << res_eq << endl;
+//	cout_com << "res_ineq = " << res_ineq << endl;
+//	cout_com << "res_eq.sum() = " << res_eq.sum() << endl;
+//	cout_com << "nConsEq = " << nConsEq << endl;
+//	cout_com << "res_ineq.sum() = " << res_ineq.sum() << endl;
+//	cout_com << "nConsIneq = " << nConsIneq << endl;
 
 	if (res_eq.sum() == nConsEq && res_ineq.sum() == nConsIneq)
 	{
@@ -333,12 +334,12 @@ IntegerType Problem::calNInf(const IntVec& x)
 {
 	auto lhs_eq = (*A_eq) * x;
 	auto lhs_ineq = (*A_ineq) * x;
-//	cout << "lhs_eq = " << lhs_eq << endl;
-//	cout << "lhs_ineq = " << lhs_ineq << endl;
+//	cout_com << "lhs_eq = " << lhs_eq << endl;
+//	cout_com << "lhs_ineq = " << lhs_ineq << endl;
 
 	auto res_eq = lhs_eq.cwiseEqual(*b_eq).cast< long >();
 	auto res_ineq = lhs_ineq.cwiseMax(*b_ineq).cwiseEqual(lhs_ineq).cast< long >();
-    return res_eq.sum() + res_ineq.sum();
+	return res_eq.sum() + res_ineq.sum();
 }
 
 IntegerType Problem::getObj(const IntSpVec& x)

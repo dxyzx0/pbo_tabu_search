@@ -39,13 +39,12 @@ HeurResult HeuristicsRandom::heuristic()
 				bestObj = crntObj;
 				bestSol = x;
 				result = HeurResult::HEUR_FINDBESTSOL;
-				cout << "Found a better solution with obj = " << bestObj << endl;
+				cout_sol_com << "Found a better solution with obj = " << bestObj << endl;
 				break;
 			}
 			else
 			{
 				result = result == HeurResult::HEUR_FINDBESTSOL ? result : HeurResult::HEUR_FINDBADSOL;
-//				cout << "Found a feasible solution with obj = " << crntObj << endl;
 			}
 
 		}

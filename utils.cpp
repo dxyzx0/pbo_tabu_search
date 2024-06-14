@@ -120,7 +120,7 @@ std::shared_ptr< IntVec > str2vec(const std::string& str) {
 
 	int i = 0;
 	while (ss >> num) {
-		std::cout << "num = " << num << std::endl;
+		cout_com << "num = " << num << std::endl;
 		vec.emplace_back(num);
 		i++;
 	}
@@ -136,7 +136,7 @@ bool test_isFeasible(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, const IntVe
 	{
 		if (Ax_b_ineq[i] != Ax_b_ineq_expected[i])
 		{
-			std::cout << "Ax_b_ineq[" << i << "] = " << Ax_b_ineq[i] << " != " << Ax_b_ineq_expected[i] << std::endl;
+			cout_com << "Ax_b_ineq[" << i << "] = " << Ax_b_ineq[i] << " != " << Ax_b_ineq_expected[i] << std::endl;
 			isFeasible = false;
 		}
 	}
@@ -144,7 +144,7 @@ bool test_isFeasible(const IntVec& Ax_b_ineq, const IntVec& Ax_b_eq, const IntVe
 	{
 		if (Ax_b_eq[i] != Ax_b_eq_expected[i])
 		{
-			std::cout << "Ax_b_eq[" << i << "] = " << Ax_b_eq[i] << " != " << Ax_b_eq_expected[i] << std::endl;
+			cout_com << "Ax_b_eq[" << i << "] = " << Ax_b_eq[i] << " != " << Ax_b_eq_expected[i] << std::endl;
 			isFeasible = false;
 		}
 	}
