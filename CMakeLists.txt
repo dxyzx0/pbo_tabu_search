@@ -19,14 +19,12 @@ option(WITH_GMP "Use GMP" OFF)
 option(WITH_CONDA "Use Conda" ON)
 
 if (WITH_CONDA)
-    list(APPEND CMAKE_PREFIX_PATH "/home/psw/mambaforge/envs/eigen")
+    list(APPEND CMAKE_PREFIX_PATH "/home/optimi/spu/mambaforge/envs/cpp")
     message(STATUS "CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}")
 endif ()
 
 if (WITH_EIGEN)
     set(COMPILE_DEFS ${COMPILE_DEFS} useEigen)
-    find_package(Eigen3 REQUIRED)
-    set(LIBRARYS ${LIBRARYS} Eigen3::Eigen)
 endif ()
 
 if (WITH_GMP)

@@ -10,7 +10,7 @@
 #include <string>
 #include "DefaultCallback.h"
 #include "../type_int.h"
-#include <Eigen/Sparse>
+#include "../Eigen/Sparse"
 
 using namespace std;
 
