@@ -19,12 +19,14 @@ option(WITH_GMP "Use GMP" OFF)
 option(WITH_CONDA "Use Conda" ON)
 
 if (WITH_CONDA)
-    list(APPEND CMAKE_PREFIX_PATH "/home/optimi/spu/mambaforge/envs/cpp")
+    list(APPEND CMAKE_PREFIX_PATH "/home/psw/mambaforge/envs/eigen")
     message(STATUS "CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}")
 endif ()
 
 if (WITH_EIGEN)
     set(COMPILE_DEFS ${COMPILE_DEFS} useEigen)
+    find_package(Eigen3 REQUIRED)
+    set(LIBRARYS ${LIBRARYS} Eigen3::Eigen)
 endif ()
 
 if (WITH_GMP)
@@ -33,6 +35,8 @@ if (WITH_GMP)
 endif ()
 
 find_package(spdlog CONFIG REQUIRED)
+set(LIBRARYS ${LIBRARYS} spdlog::spdlog)
+
 add_executable(pbo_heur_eigen
         main.cpp
         parser/DefaultCallback.cpp
@@ -49,5 +53,5 @@ add_executable(pbo_heur_eigen
         HeuristicsRandom.cpp
         HeuristicsTabuSearch.cpp
 )
-target_link_libraries(pbo_heur_eigen ${LIBRARYS} spdlog::spdlog)
+target_link_libraries(pbo_heur_eigen ${LIBRARYS})
 target_compile_definitions(pbo_heur_eigen PRIVATE ${COMPILE_DEFS})

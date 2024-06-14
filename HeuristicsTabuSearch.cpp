@@ -127,7 +127,7 @@ HeurResult HeuristicsTabuSearch::heuristic()
 	}
 	else
 	{
-		spdlog::info("(*) Tabu search did not find feasible solution.");
+		spdlog::info("(*) Tabu search found no solution.");
 	}
 
 	return res;
@@ -277,7 +277,7 @@ void HeuristicsTabuSearch::testFeasAndUpdateBest(const shared_ptr< IntVec >& Ax_
 				res = HeurResult::HEUR_FINDBESTSOL;
 			}
 
-			cout << "Found a better solution with obj = " << bestObj << endl;
+			cout_sol_com << "Found a better solution with obj = " << bestObj << endl;
 		}
 		else
 		{
@@ -348,7 +348,7 @@ void HeuristicsTabuSearch::randomSelectMoveFromTopk(shared_ptr< IntVec >& Ax_b_i
 	{
 		rand_k = 0;
 	}
-	spdlog::info("(**) Randomly selected move {} from top {} moves", rand_k, topk_scores.size());
+	spdlog::debug("(**) Randomly selected move {} from top {} moves", rand_k, topk_scores.size());
 
 	while (rand_k-- > 0)
 	{
@@ -373,7 +373,7 @@ void HeuristicsTabuSearch::randomSelectMoveFromTopk(shared_ptr< IntVec >& Ax_b_i
 	}
 	if (best_k != -1)
 	{
-		spdlog::info("(**) Found a better move {} with score = {}", best_k, to_string(best_score_j));
+		spdlog::debug("(**) Found a better move {} with score = {}", best_k, to_string(best_score_j));
 		(*x)[best_k] = 1 - (*x)[best_k];
 
 		updateTabuList(best_k, j);
@@ -388,12 +388,12 @@ void HeuristicsTabuSearch::randomSelectMoveFromTopk(shared_ptr< IntVec >& Ax_b_i
 		// randomly select a move
 		nConsecutiveNonImproving++;
 		long nFlip = min(nVar / 10 * nConsecutiveNonImproving, nVar * 2 / 3);
-		spdlog::info("(**) No better move found in {} consecutive iterations, randomly flip {} vars",
+		spdlog::debug("(**) No better move found in {} consecutive iterations, randomly flip {} vars",
 			nConsecutiveNonImproving, nFlip);
 		x = gen_rnd_vec(nVar, nFlip, x, time(nullptr));
 		tie(Ax_b_ineq, Ax_b_eq) = calAxb(*x);
 		score_x = score(*x, *Ax_b_ineq, *Ax_b_eq);
-		spdlog::info("(**) Randomly flipped x with score = {}", to_string(score_x));
+		spdlog::debug("(**) Randomly flipped x with score = {}", to_string(score_x));
 
 		assert(*Ax_b_ineq == (*prob->getA_ineq()) * (*x) - (*prob->getB_ineq()));
 		assert(*Ax_b_eq == (*prob->getA_eq()) * (*x) - (*prob->getB_eq()));
